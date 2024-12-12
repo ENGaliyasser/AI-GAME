@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>855</width>
+    <height>524</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>AI Hive Game</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QStackedWidget" name="stackedWidget">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="currentIndex">
+       <number>2</number>
+      </property>
+      <widget class="QWidget" name="page">
+       <property name="styleSheet">
+        <string notr="true">/* General Background */
+QWidget {
+    background-color: #2c3e50; /* Dark slate blue background */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #ecf0f1; /* Light text color */
+}
+
+/* Title Label */
+QLabel {
+    font-size: 24px;
+    font-weight: bold;
+    color: #f1c40f; /* Golden yellow for the title */
+    text-align: center;
+}
+
+/* Drop-down Menus */
+QComboBox {
+    background-color: #34495e; /* Dark grayish blue background */
+    border: 1px solid #7f8c8d; /* Soft gray border */
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 14px;
+    color: #ecf0f1; /* Light text color */
+}
+
+QComboBox:hover {
+    border: 1px solid #f1c40f; /* Golden yellow border on hover */
+}
+
+QComboBox::drop-down {
+    background-color: #2c3e50; /* Same dark background */
+    border: none;
+}
+
+/* Text Fields */
+QLineEdit {
+    background-color: #34495e; /* Dark grayish blue background */
+    border: 1px solid #7f8c8d; /* Soft gray border */
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 14px;
+    color: #ecf0f1; /* Light text color */
+}
+
+QLineEdit:focus {
+    border: 1px solid #f1c40f; /* Golden yellow border on focus */
+    outline: none;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #1abc9c; /* Teal button */
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+}
+
+QPushButton:hover {
+    background-color: #16a085; /* Darker teal on hover */
+}
+
+QPushButton:pressed {
+    background-color: #0e6655; /* Even darker teal on press */
+}
+
+/* Optional: Tooltips */
+QToolTip {
+    background-color: #34495e; /* Dark grayish blue background */
+    color: #ecf0f1; /* Light text */
+    border: 1px solid #7f8c8d; /* Soft gray border */
+    border-radius: 5px;
+    padding: 5px;
+}
+</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="1">
+         <widget class="QComboBox" name="comboBox">
+          <item>
+           <property name="text">
+            <string>Choose</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Human</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Computer</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_18">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Player 1 Mode</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QComboBox" name="comboBox_2">
+          <item>
+           <property name="text">
+            <string>Choose</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Human</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Computer</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_21">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Difficulty</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_16">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Player 1 Name </string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="label_19">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Player 2 Mode</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLabel" name="label_17">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Player 2 Name </string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="lineEdit"/>
+        </item>
+        <item row="3" column="3">
+         <widget class="QComboBox" name="comboBox_3">
+          <item>
+           <property name="text">
+            <string>Choose</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Human</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Computer</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="4" column="3">
+         <widget class="QLineEdit" name="lineEdit_2"/>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLabel" name="label_20">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Difficulty</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="4">
+         <widget class="QLabel" name="label">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>60</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>-1</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>AI HIVE GAME</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="comboBox_4">
+          <item>
+           <property name="text">
+            <string>Choose</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Human</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Computer</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="5" column="0" colspan="4">
+         <widget class="QPushButton" name="start">
+          <property name="text">
+           <string>START</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_2">
+       <property name="styleSheet">
+        <string notr="true">/* General Background */
+QWidget {
+    background-color: #2c3e50; /* Dark slate blue background */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #ecf0f1; /* Light text color */
+}
+
+/* Title Label */
+QLabel {
+    font-size: 24px;
+    font-weight: bold;
+    color: #f1c40f; /* Golden yellow for the title */
+    text-align: center;
+}
+
+/* Drop-down Menus */
+QComboBox {
+    background-color: #34495e; /* Dark grayish blue background */
+    border: 1px solid #7f8c8d; /* Soft gray border */
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 14px;
+    color: #ecf0f1; /* Light text color */
+}
+
+QComboBox:hover {
+    border: 1px solid #f1c40f; /* Golden yellow border on hover */
+}
+
+QComboBox::drop-down {
+    background-color: #2c3e50; /* Same dark background */
+    border: none;
+}
+
+/* Text Fields */
+QLineEdit {
+    background-color: #34495e; /* Dark grayish blue background */
+    border: 1px solid #7f8c8d; /* Soft gray border */
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 14px;
+    color: #ecf0f1; /* Light text color */
+}
+
+QLineEdit:focus {
+    border: 1px solid #f1c40f; /* Golden yellow border on focus */
+    outline: none;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #1abc9c; /* Teal button */
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+}
+
+QPushButton:hover {
+    background-color: #16a085; /* Darker teal on hover */
+}
+
+QPushButton:pressed {
+    background-color: #0e6655; /* Even darker teal on press */
+}
+
+/* Optional: Tooltips */
+QToolTip {
+    background-color: #34495e; /* Dark grayish blue background */
+    color: #ecf0f1; /* Light text */
+    border: 1px solid #7f8c8d; /* Soft gray border */
+    border-radius: 5px;
+    padding: 5px;
+}
+</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="pygame_widget" name="widget" native="true">
+          <property name="styleSheet">
+           <string notr="true">/* General Background */
+QWidget {
+    background-color: #2c3e50; /* Dark slate blue background */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #ecf0f1; /* Light text color */
+}</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="endbutton">
+          <property name="text">
+           <string>END</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_3">
+       <property name="styleSheet">
+        <string notr="true">/* General Background */
+#page_3 {
+    background-color: #2c3e50; /* Dark slate blue background */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #ecf0f1; /* Light text color */
+}
+
+/* Title Label: &quot;THE END&quot; */
+#end {
+    font-size: 36px;
+    font-weight: bold;
+    color: #e74c3c; /* Bright red for emphasis */
+    text-align: center;
+}
+
+/* Labels for Score and Winner */
+#score {
+    font-size: 28px; /* Larger text size */
+    font-weight: bold; /* Bolder appearance */
+    color: #ecf0f1; /* Light text color */
+    text-align: center;
+}
+#score_2 {
+    font-size: 28px; /* Larger text size */
+    font-weight: bold; /* Bolder appearance */
+    color: #ecf0f1; /* Light text color */
+    text-align: center;
+}
+#winner {
+    font-size: 32px; /* Larger text size */
+    font-weight: bold; /* Bolder appearance */
+    color: #2ecc71; /* Greenish color */
+    text-align: center;
+}
+
+/* Score Numbers */
+#scorenumbers {
+    font-size: 50px;
+    font-weight: bold;
+    color:#2ecc71; /* green for the score */
+    text-align: center;
+}
+#scorenumbers_2 {
+    font-size: 50px;
+    font-weight: bold;
+    color: #e74c3c; /* red for the score */
+    text-align: center;
+}
+/* Buttons */
+#restart, #startagain {
+    background-color: #1abc9c; /* Teal button background */
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+}
+
+#restart:hover, #startagain:hover {
+    background-color: #16a085; /* Darker teal on hover */
+}
+
+#restart:pressed, #startagain:pressed {
+    background-color: #0e6655; /* Even darker teal on press */
+}
+
+/* Status Bar */
+QStatusBar {
+    background-color: #34495e; /* Slightly darker than main background */
+    color: #ecf0f1; /* Light text */
+    border: 1px solid #7f8c8d; /* Soft gray border */
+    padding: 2px;
+}
+</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0" colspan="2">
+         <widget class="QLabel" name="end">
+          <property name="text">
+           <string>THE END</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="score_2">
+          <property name="text">
+           <string>Player 2 Score:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLabel" name="scorenumbers_2">
+          <property name="text">
+           <string>560</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0" rowspan="2" colspan="2">
+         <widget class="QLabel" name="winner">
+          <property name="text">
+           <string>Player 1 WON</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="1">
+         <widget class="QPushButton" name="startagain">
+          <property name="text">
+           <string>Start Again</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="0">
+         <widget class="QPushButton" name="restart">
+          <property name="text">
+           <string>Restart</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="score">
+          <property name="text">
+           <string>Player 1 Score:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLabel" name="scorenumbers">
+          <property name="text">
+           <string>560</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>pygame_widget</class>
+   <extends>QWidget</extends>
+   <header>pygame_widget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
