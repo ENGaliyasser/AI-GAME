@@ -33,14 +33,16 @@ class Board:
         return self.board_2d[x][y]
     
     def place_piece (self, piece : 'Piece' ,position : tuple[int,int] ):
+        x, y = position
+        self.board_2d[x][y] = piece.type
+        piece.position = position
+        self.pieces.append(piece)
         if piece.type == -1 or piece.type == -2:
           self.black_piece.append(piece)
 
         elif piece.type == 1 or piece.type == 2:
           self.white_piece.append(piece)
-        x,y = position
-        self.board_2d[x][y] = piece.type
-        piece.position = position
+
     
 
     def make_move(self, move):
@@ -96,7 +98,7 @@ class Piece:
         self.player = player
         self.color = color
         self.pos_gui = pos_gui
-        self.board.pieces.append(self)
+        #self.board.pieces.append(self)
 
 
     def check_coordinates(self , x:int, y:int):
@@ -524,10 +526,10 @@ class Piece:
         """
         if self.position == (-1, -1):  # The piece is outside the board (not used yet)
             if self.board.check_empty_board():  # If the board is empty
-                self.valid_moves = [(int(self.board.size/2), int(self.board.size/2))]
+                self.valid_moves = [(4,3)]
                 return  self.valid_moves # Place the piece at the center of the board
-            elif len(self.board.pieces) ==1 :
-                old_piece =self.board.pieces[0].position
+            elif len(self.board.pieces) == 1:
+                old_piece = self.board.pieces[0].position
                 x, y = old_piece  # Unpack the tuple
                 self.valid_moves = self.check_coordinates(x,y)
                 return self.valid_moves
@@ -553,46 +555,46 @@ class Piece:
             else:
                 return[]
 
-def main():
-
-     # Create a board with size 3x3
-    board = Board(10)
-#     # board.board_2d[5][5] = -1
-#     # board.board_2d[6][5] = -1
-#     # board.board_2d[6][3] =  1
-#     # board.board_2d[7][4] =  1
-
-
-
-    piece1 =Piece(-1,(-1,-1),"hopper",board)
-    piece2 =Piece(1,(-1,-1),"hopper",board)
-    piece3 =Piece(1,(-1,-1),"hopper",board)
-    piece4 =Piece(1,(-1,-1),"hopper",board)
-    piece5 =Piece(1,(-1,-1),"hopper",board)
-    piece6 =Piece(1,(-1,-1),"hopper",board)
-    piece7 =Piece(1,(-1,-1),"hopper",board)
-    piece8 =Piece(1,(-1,-1),"hopper",board)
-    piece9 =Piece(1,(-1,-1),"hopper",board)
-    piece10 =Piece(1,(-1,-1),"hopper",board)
-    piece11 =Piece(1,(-1,-1),"hopper",board)
-
-
-
-    
-
-
-
-    
-    board.place_piece(piece1,(4,3))
-
-    board.place_piece(piece2,(3,4))
-    board.place_piece(piece3,(4,4))
-    board.place_piece(piece4,(3,3))
-   #  board.place_piece(piece5,(5,2))
-   #  board.place_piece(piece6,(5,3))
-   #  board.place_piece(piece7,(6,2))
-   
-
-    print(piece1.valid_moves_func())
+# def main():
+#
+#      # Create a board with size 3x3
+#     board = Board(10)
+# #     # board.board_2d[5][5] = -1
+# #     # board.board_2d[6][5] = -1
+# #     # board.board_2d[6][3] =  1
+# #     # board.board_2d[7][4] =  1
+#
+#
+#
+#     piece1 =Piece(-1,(-1,-1),"hopper",board)
+#     piece2 =Piece(1,(-1,-1),"hopper",board)
+#     piece3 =Piece(1,(-1,-1),"hopper",board)
+#     piece4 =Piece(1,(-1,-1),"hopper",board)
+#     piece5 =Piece(1,(-1,-1),"hopper",board)
+#     piece6 =Piece(1,(-1,-1),"hopper",board)
+#     piece7 =Piece(1,(-1,-1),"hopper",board)
+#     piece8 =Piece(1,(-1,-1),"hopper",board)
+#     piece9 =Piece(1,(-1,-1),"hopper",board)
+#     piece10 =Piece(1,(-1,-1),"hopper",board)
+#     piece11 =Piece(1,(-1,-1),"hopper",board)
+#
+#
+#
+#
+#
+#
+#
+#
+#     board.place_piece(piece1,(4,3))
+#
+#     board.place_piece(piece2,(3,4))
+#     board.place_piece(piece3,(4,4))
+#     board.place_piece(piece4,(3,3))
+#    #  board.place_piece(piece5,(5,2))
+#    #  board.place_piece(piece6,(5,3))
+#    #  board.place_piece(piece7,(6,2))
+#
+#
+#     print(piece1.valid_moves_func())
 
 

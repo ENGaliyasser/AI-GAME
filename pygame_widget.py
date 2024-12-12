@@ -21,7 +21,7 @@ class pygame_widget(QWidget):
         self.x_offset = 60  # Starting x offset for the grid
         self.y_offset = 80  # Starting y offset for the grid
         self.board = self.create_hex_grid(self.grid_rows, self.grid_cols)  # 10x10 hex grid
-        self.board_logic = Board(100)  # Use the imported Board class
+        self.board_logic = Board(50)  # Use the imported Board class
         self.piece_counts = {
             1: {"Ant": 3, "Beetle": 3, "Hopper": 3, "Qbee": 1, "Spider": 2},
             2: {"Ant": 3, "Beetle": 3, "Hopper": 3, "Qbee": 1, "Spider": 2},
@@ -38,8 +38,8 @@ class pygame_widget(QWidget):
             Piece(type=-1, position=(-1, -1), insect_type="Hopper", board=self.board_logic, player=1, color=(0, 255, 0), pos_gui=(750, 150)),
             Piece(type=-1, position=(-1, -1), insect_type="Hopper", board=self.board_logic, player=1, color=(0, 255, 0), pos_gui=(800, 150)),
             Piece(type=-1, position=(-1, -1), insect_type="Hopper", board=self.board_logic, player=1, color=(0, 255, 0), pos_gui=(850, 150)),
-            Piece(type=-1, position=(-1, -1), insect_type="Qbee", board=self.board_logic, player=1, color=(255, 255, 0), pos_gui=(750, 200)),
-            Piece(type=-2, position=(-1, -1), insect_type="Spider", board=self.board_logic, player=1, color=(255, 0, 0), pos_gui=(750, 250)),
+            Piece(type=-2, position=(-1, -1), insect_type="Qbee", board=self.board_logic, player=1, color=(255, 255, 0), pos_gui=(750, 200)),
+            Piece(type=-1, position=(-1, -1), insect_type="Spider", board=self.board_logic, player=1, color=(255, 0, 0), pos_gui=(750, 250)),
             Piece(type=-1, position=(-1, -1), insect_type="Spider", board=self.board_logic, player=1, color=(255, 0, 0), pos_gui=(800, 250)),
             Piece(type=1, position=(-1, -1), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(750, 450)),
             Piece(type=1, position=(-1, -1), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(800, 450)),
@@ -220,6 +220,11 @@ class pygame_widget(QWidget):
             self.selected_piece.pos_gui = self.grid_to_pixel(row, col)  # Update GUI position
             print(f"Piece placed at grid: ({row}, {col})")
             self.board_logic.place_piece(self.selected_piece, (row, col))  # Update board logic
+            self.board_logic.display()
+            #print(f"This board: {self.board_logic.board_2d} ")
+            for piece in self.pieces:
+                piece.board = self.board_logic
+            #self.selected_piece.board = self.board_logic
         else:
             # Invalid move, return piece to its start position
             self.selected_piece.pos_gui = self.start_gui_position
