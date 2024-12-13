@@ -542,11 +542,11 @@ class Piece:
                   return self.valid_moves
                 
         else:
-            if self.insect_type == "hopper":
+            if self.insect_type == "Hopper":
                 return self.hopper_valid_moves()           
-            elif self.insect_type == "beetle":
+            elif self.insect_type == "Beetle":
                 return self.beetle_valid_moves()    
-            elif self.insect_type == "QueenBee":
+            elif self.insect_type == "Qbee":
                 return self.get_valid_moves_of_Queen_Bee()
             elif self.insect_type == "Spider":
                 return self.spider_valid_moves()
