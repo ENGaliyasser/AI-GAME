@@ -84,51 +84,41 @@ class pygame_widget(QWidget):
         return x, y
 
     def pixel_to_grid(self, x, y):
-        """Convert pixel (x, y) to grid (row, col) with precise hex boundary alignment."""
-        # Calculate axial coordinates (q, r) in the hex grid
-        q = (x - self.x_offset) / (self.hex_radius * 1.5)
-        r = (y - self.y_offset) / (self.hex_radius * math.sqrt(3)) - 0.5 * (int(q) % 2)
+        """Convert pixel (x, y) to grid (row, col) using precomputed centers."""
+        closest_hex = None
+        min_distance = float('inf')
 
-        # Calculate the cube coordinates for the hex (needed for proper snapping)
-        cube_x = q
-        cube_z = r
-        cube_y = -cube_x - cube_z
+        # Iterate through all hexagon centers
+        for (row, col), center in self.hex_centers.items():
+            # Calculate Euclidean distance to the center
+            distance = ((x - center[0]) ** 2 + (y - center[1]) ** 2) ** 0.5
+            if distance < min_distance:
+                min_distance = distance
+                closest_hex = (row, col)
 
-        # Round to nearest hex grid position
-        rx = round(cube_x)
-        ry = round(cube_y)
-        rz = round(cube_z)
-
-        # Fix rounding errors by ensuring x + y + z = 0
-        x_diff = abs(rx - cube_x)
-        y_diff = abs(ry - cube_y)
-        z_diff = abs(rz - cube_z)
-
-        if x_diff > y_diff and x_diff > z_diff:
-            rx = -ry - rz
-        elif y_diff > z_diff:
-            ry = -rx - rz
-        else:
-            rz = -rx - ry
-
-        # Convert cube coordinates back to grid row/col
-        col = rx
-        row = rz
-
-        return row, col
+        return closest_hex
 
     # ------------------------------- Hex Grid Creation -------------------------------
 
     def create_hex_grid(self, rows, cols):
-        """Create a hexagonal grid of given dimensions."""
+        """Create a hexagonal grid of given dimensions and save centers."""
+        self.hex_centers = {}  # Dictionary to store hexagon centers by (row, col)
         hex_grid = []
+
         for row in range(rows):
             row_list = []
             for col in range(cols):
+                # Calculate the center of the hexagon
                 x = self.hex_radius * 3 / 2 * col
                 y = self.hex_radius * (3 ** 0.5) * (row + 0.5 * (col % 2))
-                row_list.append((x + 60, y + 80))  # Offset for center alignment
+                center = (x + 60, y + 80)  # Offset for center alignment
+
+                # Save center in the dictionary
+                self.hex_centers[(row, col)] = center
+                row_list.append(center)
+
             hex_grid.append(row_list)
+
         return hex_grid
 
     # ------------------------------- Pygame Drawing Functions -------------------------------
@@ -141,7 +131,7 @@ class pygame_widget(QWidget):
                     self.screen,
                     (200, 200, 200),  # Gray color for grid lines
                     [self.hex_corner(center, i) for i in range(6)],
-                    2,  # Border width
+                    5,  # Border width
                 )
 
         # Highlight valid moves
