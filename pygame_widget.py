@@ -84,9 +84,37 @@ class pygame_widget(QWidget):
         return x, y
 
     def pixel_to_grid(self, x, y):
-        """Convert pixel (x, y) to grid (row, col)."""
-        col = int((x - self.x_offset) / (self.hex_radius * 1.5))
-        row = int((y - self.y_offset) / (self.hex_radius * math.sqrt(3)))
+        """Convert pixel (x, y) to grid (row, col) with precise hex boundary alignment."""
+        # Calculate axial coordinates (q, r) in the hex grid
+        q = (x - self.x_offset) / (self.hex_radius * 1.5)
+        r = (y - self.y_offset) / (self.hex_radius * math.sqrt(3)) - 0.5 * (int(q) % 2)
+
+        # Calculate the cube coordinates for the hex (needed for proper snapping)
+        cube_x = q
+        cube_z = r
+        cube_y = -cube_x - cube_z
+
+        # Round to nearest hex grid position
+        rx = round(cube_x)
+        ry = round(cube_y)
+        rz = round(cube_z)
+
+        # Fix rounding errors by ensuring x + y + z = 0
+        x_diff = abs(rx - cube_x)
+        y_diff = abs(ry - cube_y)
+        z_diff = abs(rz - cube_z)
+
+        if x_diff > y_diff and x_diff > z_diff:
+            rx = -ry - rz
+        elif y_diff > z_diff:
+            ry = -rx - rz
+        else:
+            rz = -rx - ry
+
+        # Convert cube coordinates back to grid row/col
+        col = rx
+        row = rz
+
         return row, col
 
     # ------------------------------- Hex Grid Creation -------------------------------
