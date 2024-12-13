@@ -251,6 +251,7 @@ class pygame_widget(QWidget):
 
         self.selected_piece = None  # Deselect the piece
 
+
     def is_point_in_hex(self, point, center):
         """Check if a point is inside a hexagon."""
         px, py = point
