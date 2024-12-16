@@ -1,11 +1,10 @@
-from piecesboard import Piece,Board
+from piecesboard import Piece, Board
 from game import Game
-
 
 import copy
 
 
-def evaluate_board(board_obj,player):
+def evaluate_board(board_obj, player):
     #   if player is -1 then its black turn,1 is white turn
     from math import sqrt
 
@@ -64,7 +63,7 @@ def evaluate_board(board_obj,player):
     piece_value_score = 0
     for piece in board_obj.pieces:
         x, y = piece.position
-        if(x > 0) and (y > 0):
+        if (x > 0) and (y > 0):
             piece_value_score = piece_value_score + piece.value
     # Calculate the final score
     score = 0
@@ -80,15 +79,14 @@ def evaluate_board(board_obj,player):
     return score
 
 
-
-def get_all_possible_moves(board, piece_type):#T
+def get_all_possible_moves(board, piece_type):  # T
     """
     Get all possible moves for a given piece type (white or black).
-    
+
     Args:
     - board (Board): The game board object containing all pieces and their positions.
     - piece_type (int): The piece type for which to generate moves (1 for white, -1 for black).
-    
+
     Returns:
     - list of tuples: Each tuple represents a move in the form of ((starting_position), (valid_move_position)).
     """
@@ -96,17 +94,17 @@ def get_all_possible_moves(board, piece_type):#T
     for piece in board.pieces:
         if piece_type < 0:
             valid = piece.valid_moves_func()
-            if(valid):
+            if (valid):
                 if piece.type == -1 or piece.type == -2:
                     for valid_move in valid:
                         all_moves.append((piece.position, valid_move))
         else:
             valid = piece.valid_moves_func()
-            if(valid):
+            if (valid):
                 if piece.type == 1 or piece.type == 2:
                     for valid_move in valid:
                         if valid_move != piece.position:
-                            all_moves.append((piece.position, valid_move)) 
+                            all_moves.append((piece.position, valid_move))
 
     if not all_moves:
         print(f"No valid moves for pieces of type {piece_type}.")
@@ -159,7 +157,7 @@ def minimax(board, depth, is_maximizing_player):
     if is_maximizing_player:  # AI's turn (Black)
         max_eval = float('-inf')
         for move in get_all_possible_moves(board, -1):  # -1 is Black
-            new_board =board.custom_copy()
+            new_board = board.custom_copy()
             new_board.board_logic.make_move(move)
             eval = minimax(new_board, depth - 1, False)
             max_eval = max(max_eval, eval)
@@ -167,14 +165,14 @@ def minimax(board, depth, is_maximizing_player):
     else:  # Opponent's turn (White)
         min_eval = float('inf')
         for move in get_all_possible_moves(board, 1):  # 1 is White
-            new_board =board.custom_copy()
+            new_board = board.custom_copy()
             new_board.board_logic.make_move(move)
             eval = minimax(new_board, depth - 1, True)
             min_eval = min(min_eval, eval)
         return min_eval
-    
 
-def minimax_with_alpha_beta(board,player,depth, alpha, beta, is_maximizing_player):
+
+def minimax_with_alpha_beta(board, player, depth, alpha, beta, is_maximizing_player):
     """
     Minimax function with alpha-beta pruning.
     """
@@ -182,7 +180,7 @@ def minimax_with_alpha_beta(board,player,depth, alpha, beta, is_maximizing_playe
         if not board:
             return 0
         else:
-            return evaluate_board(board,player)
+            return evaluate_board(board, player)
 
     if is_maximizing_player:  # AI's turn (Black)
         max_eval = float('-inf')
@@ -196,7 +194,7 @@ def minimax_with_alpha_beta(board,player,depth, alpha, beta, is_maximizing_playe
             else:
                 new_board.board_logic.make_move(move)
 
-            evall = minimax_with_alpha_beta(new_board,(-1*player) ,depth - 1, alpha, beta, False)
+            evall = minimax_with_alpha_beta(new_board, (-1 * player), depth - 1, alpha, beta, False)
             max_eval = max(max_eval, evall)
             alpha = max(alpha, evall)
             if beta <= alpha:  # Prune
@@ -213,7 +211,7 @@ def minimax_with_alpha_beta(board,player,depth, alpha, beta, is_maximizing_playe
                 new_board.board_logic.place_piece(piece, end)
             else:
                 new_board.board_logic.make_move(move)
-            evall = minimax_with_alpha_beta(new_board,(-1*player) ,depth - 1, alpha, beta, True)
+            evall = minimax_with_alpha_beta(new_board, (-1 * player), depth - 1, alpha, beta, True)
             min_eval = min(min_eval, evall)
             beta = min(beta, evall)
             if beta <= alpha:  # Prune
@@ -221,28 +219,28 @@ def minimax_with_alpha_beta(board,player,depth, alpha, beta, is_maximizing_playe
         return min_eval
 
 
-
 def find_best_move(board, depth):
     best_move = None
     best_value = float('-inf')
     all_moves = get_all_possible_moves(board, -1)  # -1 is Black (AI)
-    
+
     print("\nAll Moves:")
     print(all_moves)
 
     if not all_moves:
         print("No possible moves for the AI.")
         return None  # No moves available
-    
+
     for move in all_moves:
-        new_board =board.custom_copy()
+        new_board = board.custom_copy()
         new_board.board_logic.make_move(move)
-        move_value = minimax(new_board, depth-1, False)
+        move_value = minimax(new_board, depth - 1, False)
         if move_value > best_value:
             best_value = move_value
             best_move = move
 
     return best_move
+
 
 def find_best_move_alpha_beta(board, depth):
     """
@@ -265,7 +263,7 @@ def find_best_move_alpha_beta(board, depth):
     for move in all_moves:
         new_board = board.custom_copy()
         new_board.board_logic.make_move(move)
-            
+
         move_value = minimax_with_alpha_beta(new_board, depth - 1, alpha, beta, False)
         if move_value > best_value:
             best_value = move_value
@@ -274,6 +272,7 @@ def find_best_move_alpha_beta(board, depth):
 
     return best_move
 
+
 def find_piece_by_position(board_obj, position):
     """Find the piece object at the given position."""
     for piece in board_obj.pieces:
@@ -281,7 +280,8 @@ def find_piece_by_position(board_obj, position):
             return piece
     return None
 
-def find_best_move_with_iterative_deepening(board,player,max_depth,time_limit=5):
+
+def find_best_move_with_iterative_deepening(board, player, max_depth, time_limit=5):
     """
     Finds the best move using iterative deepening with alpha-beta pruning.
     player: -1 for Black (AI), 1 for White.
@@ -294,7 +294,7 @@ def find_best_move_with_iterative_deepening(board,player,max_depth,time_limit=5)
     alpha = float('-inf')
     beta = float('inf')
     start_time = time.time()
-    
+
     for depth in range(1, max_depth + 1):  # Iteratively deepen the search
         print(f"Searching at depth {depth}...")
         current_best_move = None
@@ -309,7 +309,7 @@ def find_best_move_with_iterative_deepening(board,player,max_depth,time_limit=5)
                 new_board.board_logic.place_piece(piece, end)
             else:
                 new_board.board_logic.make_move(move)
-            move_value = minimax_with_alpha_beta(new_board,(-1*player) ,depth - 1, alpha, beta, False)
+            move_value = minimax_with_alpha_beta(new_board, (-1 * player), depth - 1, alpha, beta, False)
 
             if move_value > current_best_value:
                 current_best_value = move_value
@@ -332,9 +332,6 @@ def find_best_move_with_iterative_deepening(board,player,max_depth,time_limit=5)
             break
 
     return best_move
-
-
-
 
 #
 #
@@ -412,5 +409,4 @@ def find_best_move_with_iterative_deepening(board,player,max_depth,time_limit=5)
 #
 #
 #
-
 

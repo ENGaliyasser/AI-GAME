@@ -79,14 +79,14 @@ class Back_End_Class(QtWidgets.QWidget, Ui_MainWindow):
         """Handle when black wins."""
         if value:  # If black won
             self.stackedWidget.setCurrentIndex(2)  # Go to page 3
-            self.winner_label.setText("Winner: Black")  # Update the winner label
+            self.winner.setText("Winner: Black")  # Update the winner label
             print("Black has won!")
 
     def on_white_won(self, value):
         """Handle when white wins."""
         if value:  # If white won
             self.stackedWidget.setCurrentIndex(2)  # Go to page 3
-            self.winner_label.setText("Winner: White")  # Update the winner label
+            self.winner.setText("Winner: White")  # Update the winner label
             print("White has won!")
 
 
