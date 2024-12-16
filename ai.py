@@ -1,6 +1,6 @@
 from piecesboard import Piece,Board
 from game import Game
-from pygame_widget import pygame_widget
+
 
 import copy
 

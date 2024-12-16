@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>855</width>
-    <height>524</height>
+    <width>1016</width>
+    <height>698</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -27,13 +27,13 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1">
+    <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page">
        <property name="styleSheet">
@@ -118,25 +118,6 @@ QToolTip {
 </string>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="1">
-         <widget class="QComboBox" name="comboBox">
-          <item>
-           <property name="text">
-            <string>Choose</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Human</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Computer</string>
-           </property>
-          </item>
-         </widget>
-        </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_18">
           <property name="minimumSize">
@@ -152,110 +133,12 @@ QToolTip {
            </size>
           </property>
           <property name="text">
-           <string>Player 1 Mode</string>
+           <string>WHITE</string>
           </property>
          </widget>
-        </item>
-        <item row="1" column="3">
-         <widget class="QComboBox" name="comboBox_2">
-          <item>
-           <property name="text">
-            <string>Choose</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Human</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Computer</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_21">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Difficulty</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_16">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Player 1 Name </string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QLabel" name="label_19">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Player 2 Mode</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLabel" name="label_17">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Player 2 Name </string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLineEdit" name="lineEdit"/>
         </item>
         <item row="3" column="3">
-         <widget class="QComboBox" name="comboBox_3">
+         <widget class="QComboBox" name="d2">
           <item>
            <property name="text">
             <string>Choose</string>
@@ -263,36 +146,14 @@ QToolTip {
           </item>
           <item>
            <property name="text">
-            <string>Human</string>
+            <string>Easy</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Computer</string>
+            <string>Hard</string>
            </property>
           </item>
-         </widget>
-        </item>
-        <item row="4" column="3">
-         <widget class="QLineEdit" name="lineEdit_2"/>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLabel" name="label_20">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Difficulty</string>
-          </property>
          </widget>
         </item>
         <item row="0" column="0" colspan="4">
@@ -318,8 +179,34 @@ QToolTip {
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QComboBox" name="comboBox_4">
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_21">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Difficulty</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="4">
+         <widget class="QPushButton" name="start">
+          <property name="text">
+           <string>START</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QComboBox" name="p2">
           <item>
            <property name="text">
             <string>Choose</string>
@@ -337,11 +224,80 @@ QToolTip {
           </item>
          </widget>
         </item>
-        <item row="5" column="0" colspan="4">
-         <widget class="QPushButton" name="start">
-          <property name="text">
-           <string>START</string>
+        <item row="3" column="2">
+         <widget class="QLabel" name="label_20">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
           </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Difficulty</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="label_19">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>BLACK</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="d1">
+          <item>
+           <property name="text">
+            <string>Choose</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Easy</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Hard</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="p1">
+          <item>
+           <property name="text">
+            <string>Choose</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Human</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Computer</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
@@ -429,7 +385,7 @@ QToolTip {
 </string>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
+        <item row="0" column="0" colspan="5">
          <widget class="pygame_widget" name="widget" native="true">
           <property name="styleSheet">
            <string notr="true">/* General Background */
@@ -443,6 +399,40 @@ QWidget {
          </widget>
         </item>
         <item row="1" column="0">
+         <widget class="QLabel" name="whitescore">
+          <property name="text">
+           <string>White:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="w2">
+          <property name="text">
+           <string>0</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="Blackscore">
+          <property name="text">
+           <string>Black:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QLabel" name="b2">
+          <property name="text">
+           <string>0</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="4">
          <widget class="QPushButton" name="endbutton">
           <property name="text">
            <string>END</string>
@@ -490,13 +480,13 @@ QWidget {
 }
 
 /* Score Numbers */
-#scorenumbers {
+#w1 {
     font-size: 50px;
     font-weight: bold;
     color:#2ecc71; /* green for the score */
     text-align: center;
 }
-#scorenumbers_2 {
+#b1 {
     font-size: 50px;
     font-weight: bold;
     color: #e74c3c; /* red for the score */
@@ -545,7 +535,7 @@ QStatusBar {
         <item row="5" column="0">
          <widget class="QLabel" name="score_2">
           <property name="text">
-           <string>Player 2 Score:</string>
+           <string>Black Score:</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -553,7 +543,7 @@ QStatusBar {
          </widget>
         </item>
         <item row="5" column="1">
-         <widget class="QLabel" name="scorenumbers_2">
+         <widget class="QLabel" name="b1">
           <property name="text">
            <string>560</string>
           </property>
@@ -589,7 +579,7 @@ QStatusBar {
         <item row="4" column="0">
          <widget class="QLabel" name="score">
           <property name="text">
-           <string>Player 1 Score:</string>
+           <string>White  Score:</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -597,7 +587,7 @@ QStatusBar {
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QLabel" name="scorenumbers">
+         <widget class="QLabel" name="w1">
           <property name="text">
            <string>560</string>
           </property>

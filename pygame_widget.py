@@ -9,7 +9,22 @@ import math
 from piecesboard import Board, Piece  # Importing the logic from the provided file
 import ai
 
+from config import config
 
+def update_scores(black, white):
+    """Update the black and white scores."""
+    config.blackscore = black  # This will trigger the blackscore_changed signal
+    config.whitescore = white  # This will trigger the whitescore_changed signal
+
+def set_black_won():
+    """Set the black player as the winner and emit the signal."""
+    config.black_won = True  # This triggers the signal for black winning
+    print("Black has won!")
+
+def set_white_won():
+    """Set the white player as the winner and emit the signal."""
+    config.white_won = True  # This triggers the signal for white winning
+    print("White has won!")
 
 class pygame_widget(QWidget):
     def __init__(self, parent=None):
@@ -75,7 +90,7 @@ class pygame_widget(QWidget):
         # Pygame loop timer
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.run_pygame)
-        self.timer.start(1000)  # ~60 FPS
+        self.timer.start(150)  # ~60 FPS
 
         # Set the size of the QWidget
         self.setFixedSize(900, 800)
@@ -271,6 +286,11 @@ class pygame_widget(QWidget):
             print(f"Invalid move. Returning piece to {self.start_gui_position}")
 
         self.selected_piece = None  # Deselect the piece
+
+
+        update_scores(black=20, white=15)
+
+
 
         
 
