@@ -1,17 +1,17 @@
-from piecesboard import Piece,Board
+from piecesboard import Piece, Board
 from game import Game
-
 
 import copy
 
 
-def evaluate_board(board_obj,player):
+def evaluate_board(board_obj, player):
     #   if player is -1 then its black turn,1 is white turn
     from math import sqrt
 
     def count_valid_moves(piece):
         """Count valid moves for the specified piece."""
-        return len(piece.valid_moves_func()) if piece else 0
+        p = piece.valid_moves_func()
+        return len(p) if piece else 0
 
     def find_piece_by_position(board_obj, position):
         """Find the piece object at the given position."""
@@ -45,7 +45,7 @@ def evaluate_board(board_obj,player):
                 x, y = piece.position
                 if ((x > 0) and (y > 0)) and piece.type in [-1, -2]:  # AI's pieces
                     distance = calculate_distance(piece.position, white_queen.position)
-                    proximity_score += max(0, 10 - distance)  # Reward closer pieces
+                    proximity_score += max(0, 60 - distance)  # Reward closer pieces
     else:
         opponent_queen_mobility = count_valid_moves(black_queen) if black_queen else 0
         own_queen_mobility = count_valid_moves(white_queen) if white_queen else 0
@@ -57,14 +57,14 @@ def evaluate_board(board_obj,player):
                 x, y = piece.position
                 if ((x > 0) and (y > 0)) and piece.type in [1, 2]:  # AI's pieces
                     distance = calculate_distance(piece.position, black_queen.position)
-                    proximity_score += max(0, 30 - distance)  # Reward closer pieces
+                    proximity_score += max(0, 60 - distance)  # Reward closer pieces
 
     # Fallback to piece values if queens are missing
     # piece_value_score = sum(piece.value for piece in board_obj.pieces if piece.position != (-1, -1))
     piece_value_score = 0
-    for piece in board_obj.pieces:
+    for piece in board_obj.board_logic.pieces:
         x, y = piece.position
-        if(x > 0) and (y > 0):
+        if (x > 0) and (y > 0):
             piece_value_score = piece_value_score + piece.value
     # Calculate the final score
     score = 0
@@ -72,7 +72,7 @@ def evaluate_board(board_obj,player):
         # Use mobility and proximity if queens are present
         score -= opponent_queen_mobility * 10  # Penalize opponent queen mobility
         score += own_queen_mobility * 5  # Reward AI queen mobility
-        score += proximity_score  # Add proximity score
+        # score += proximity_score  # Add proximity score
     else:
         # Fallback to piece value-based scoring
         score += piece_value_score
@@ -80,15 +80,14 @@ def evaluate_board(board_obj,player):
     return score
 
 
-
-def get_all_possible_moves(board, piece_type):#T
+def get_all_possible_moves(board, piece_type):  # T
     """
     Get all possible moves for a given piece type (white or black).
-    
+
     Args:
     - board (Board): The game board object containing all pieces and their positions.
     - piece_type (int): The piece type for which to generate moves (1 for white, -1 for black).
-    
+
     Returns:
     - list of tuples: Each tuple represents a move in the form of ((starting_position), (valid_move_position)).
     """
@@ -96,17 +95,18 @@ def get_all_possible_moves(board, piece_type):#T
     for piece in board.pieces:
         if piece_type < 0:
             valid = piece.valid_moves_func()
-            if(valid):
+            if (valid):
                 if piece.type == -1 or piece.type == -2:
                     for valid_move in valid:
-                        all_moves.append((piece.position, valid_move))
+                        if valid_move != piece.position:
+                            all_moves.append((piece.position, valid_move))
         else:
             valid = piece.valid_moves_func()
-            if(valid):
+            if (valid):
                 if piece.type == 1 or piece.type == 2:
                     for valid_move in valid:
                         if valid_move != piece.position:
-                            all_moves.append((piece.position, valid_move)) 
+                            all_moves.append((piece.position, valid_move))
 
     if not all_moves:
         print(f"No valid moves for pieces of type {piece_type}.")
@@ -121,7 +121,8 @@ def game_over(board):
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
             # Check if any adjacent cell is empty
-            if 0 <= nx < board.board_logic.size and 0 <= ny < board.board_logic.size and board.board_logic.board_2d[nx][ny] == 0:
+            if 0 <= nx < board.board_logic.size and 0 <= ny < board.board_logic.size and board.board_logic.board_2d[nx][
+                ny] == 0:
                 return False  # Found an empty adjacent cell
         return True  # All adjacent cells are occupied
 
@@ -152,51 +153,53 @@ def game_over(board):
         return 0  # Game is not over
 
 
-def minimax(board, depth, is_maximizing_player):
-    if depth == 0 or game_over(board):
-        return evaluate_board(board)
+# def minimax(board, depth, is_maximizing_player):
+#     if depth == 0 or game_over(board):
+#         return evaluate_board(board)
 
-    if is_maximizing_player:  # AI's turn (Black)
-        max_eval = float('-inf')
-        for move in get_all_possible_moves(board, -1):  # -1 is Black
-            new_board =board.custom_copy()
-            new_board.board_logic.make_move(move)
-            eval = minimax(new_board, depth - 1, False)
-            max_eval = max(max_eval, eval)
-        return max_eval
-    else:  # Opponent's turn (White)
-        min_eval = float('inf')
-        for move in get_all_possible_moves(board, 1):  # 1 is White
-            new_board =board.custom_copy()
-            new_board.board_logic.make_move(move)
-            eval = minimax(new_board, depth - 1, True)
-            min_eval = min(min_eval, eval)
-        return min_eval
-    
+#     if is_maximizing_player:  # AI's turn (Black)
+#         max_eval = float('-inf')
+#         for move in get_all_possible_moves(board, -1):  # -1 is Black
+#             new_board =board.custom_copy()
+#             new_board.board_logic.make_move(move)
+#             eval = minimax(new_board, depth - 1, False)
+#             max_eval = max(max_eval, eval)
+#         return max_eval
+#     else:  # Opponent's turn (White)
+#         min_eval = float('inf')
+#         for move in get_all_possible_moves(board, 1):  # 1 is White
+#             new_board =board.custom_copy()
+#             new_board.board_logic.make_move(move)
+#             eval = minimax(new_board, depth - 1, True)
+#             min_eval = min(min_eval, eval)
+#         return min_eval
 
-def minimax_with_alpha_beta(board,player,depth, alpha, beta, is_maximizing_player):
+
+def minimax_with_alpha_beta(board, player, depth, alpha, beta, is_maximizing_player):
     """
     Minimax function with alpha-beta pruning.
     """
     if depth == 0 or game_over(board):
-        if not board:
-            return 0
-        else:
-            return evaluate_board(board,player)
+        return evaluate_board(board, player)
 
     if is_maximizing_player:  # AI's turn (Black)
         max_eval = float('-inf')
         for move in get_all_possible_moves(board, player):  # -1 is Black
-            new_board = board.custom_copy()
+            # new_board = board.custom_copy()
+            flag = -1  # place = 0 | # move = 1
+
             start, end = move
-            piece = find_piece_by_position(new_board, start)
+            piece = find_piece_by_position(board, start)
             x, y = start
             if (x < 0) and (y < 0):
-                new_board.board_logic.place_piece(piece, end)
+                board.board_logic.place_piece(piece, end)
+                flag = 0
             else:
-                new_board.board_logic.make_move(move)
+                board.board_logic.make_move(move)
+                flag = 1
 
-            evall = minimax_with_alpha_beta(new_board,(-1*player) ,depth - 1, alpha, beta, False)
+            evall = minimax_with_alpha_beta(board, (-1 * player), depth - 1, alpha, beta, False)
+            undo(board.board_logic, flag, start, end, piece)
             max_eval = max(max_eval, evall)
             alpha = max(alpha, evall)
             if beta <= alpha:  # Prune
@@ -204,16 +207,23 @@ def minimax_with_alpha_beta(board,player,depth, alpha, beta, is_maximizing_playe
         return max_eval
     else:  # Opponent's turn (White)
         min_eval = float('inf')
-        for move in get_all_possible_moves(board, player):  # 1 is White
-            new_board = board.custom_copy()
+        moves = get_all_possible_moves(board, player)
+        for move in moves:  # 1 is White
+            # new_board = board.custom_copy()
+            flag = -1  # place = 0 | # move = 1
             start, end = move
-            piece = find_piece_by_position(new_board, start)
+            piece = find_piece_by_position(board, start)
             x, y = start
             if (x < 0) and (y < 0):
-                new_board.board_logic.place_piece(piece, end)
+                board.board_logic.place_piece(piece, end)
+                flag = 0
             else:
-                new_board.board_logic.make_move(move)
-            evall = minimax_with_alpha_beta(new_board,(-1*player) ,depth - 1, alpha, beta, True)
+                board.board_logic.make_move(move)
+                flag = 1
+
+            evall = minimax_with_alpha_beta(board, (-1 * player), depth - 1, alpha, beta, True)
+            undo(board.board_logic, flag, start, end, piece)
+
             min_eval = min(min_eval, evall)
             beta = min(beta, evall)
             if beta <= alpha:  # Prune
@@ -221,58 +231,57 @@ def minimax_with_alpha_beta(board,player,depth, alpha, beta, is_maximizing_playe
         return min_eval
 
 
+# def find_best_move(board, depth):
+#     best_move = None
+#     best_value = float('-inf')
+#     all_moves = get_all_possible_moves(board, -1)  # -1 is Black (AI)
 
-def find_best_move(board, depth):
-    best_move = None
-    best_value = float('-inf')
-    all_moves = get_all_possible_moves(board, -1)  # -1 is Black (AI)
-    
-    print("\nAll Moves:")
-    print(all_moves)
+#     print("\nAll Moves:")
+#     print(all_moves)
 
-    if not all_moves:
-        print("No possible moves for the AI.")
-        return None  # No moves available
-    
-    for move in all_moves:
-        new_board =board.custom_copy()
-        new_board.board_logic.make_move(move)
-        move_value = minimax(new_board, depth-1, False)
-        if move_value > best_value:
-            best_value = move_value
-            best_move = move
+#     if not all_moves:
+#         print("No possible moves for the AI.")
+#         return None  # No moves available
 
-    return best_move
+#     for move in all_moves:
+#         new_board =board.custom_copy()
+#         new_board.board_logic.make_move(move)
+#         move_value = minimax(new_board, depth-1, False)
+#         if move_value > best_value:
+#             best_value = move_value
+#             best_move = move
 
-def find_best_move_alpha_beta(board, depth):
-    """
-    Finds the best move for the AI using minimax with alpha-beta pruning.
-    """
-    best_move = None
-    best_value = float('-inf')
-    alpha = float('-inf')
-    beta = float('inf')
+#     return best_move
 
-    all_moves = get_all_possible_moves(board, -1)  # -1 is Black (AI)
+# def find_best_move_alpha_beta(board, depth):
+#     """
+#     Finds the best move for the AI using minimax with alpha-beta pruning.
+#     """
+#     best_move = None
+#     best_value = float('-inf')
+#     alpha = float('-inf')
+#     beta = float('inf')
 
-    print("\nAll Moves:")
-    print(all_moves)
+#     all_moves = get_all_possible_moves(board, -1)  # -1 is Black (AI)
 
-    if not all_moves:
-        print("No possible moves for the AI.")
-        return None  # No moves available
+#     print("\nAll Moves:")
+#     print(all_moves)
 
-    for move in all_moves:
-        new_board = board.custom_copy()
-        new_board.board_logic.make_move(move)
-            
-        move_value = minimax_with_alpha_beta(new_board, depth - 1, alpha, beta, False)
-        if move_value > best_value:
-            best_value = move_value
-            best_move = move
-        alpha = max(alpha, best_value)
+#     if not all_moves:
+#         print("No possible moves for the AI.")
+#         return None  # No moves available
 
-    return best_move
+#     for move in all_moves:
+#         new_board = board.custom_copy()
+#         new_board.board_logic.make_move(move)
+
+#         move_value = minimax_with_alpha_beta(new_board, depth - 1, alpha, beta, False)
+#         if move_value > best_value:
+#             best_value = move_value
+#             best_move = move
+#         alpha = max(alpha, best_value)
+
+#     return best_move
 
 def find_piece_by_position(board_obj, position):
     """Find the piece object at the given position."""
@@ -281,7 +290,23 @@ def find_piece_by_position(board_obj, position):
             return piece
     return None
 
-def find_best_move_with_iterative_deepening(board,player,max_depth,time_limit=5):
+
+def undo(board, flag, start, end, piece):
+    if flag == 1:
+        undoMove = (end, start)
+        board.make_move(undoMove)
+    elif flag == 0:
+        x, y = piece.position
+        board.board_2d[x][y] = 0
+        piece.position = start
+        board.pieces.pop()
+        if piece.type == -1 or piece.type == -2:
+            board.black_piece.pop()
+        elif piece.type == 1 or piece.type == 2:
+            board.white_piece.pop()
+
+
+def find_best_move_with_iterative_deepening(board, player, max_depth, time_limit=5):
     """
     Finds the best move using iterative deepening with alpha-beta pruning.
     player: -1 for Black (AI), 1 for White.
@@ -294,22 +319,27 @@ def find_best_move_with_iterative_deepening(board,player,max_depth,time_limit=5)
     alpha = float('-inf')
     beta = float('inf')
     start_time = time.time()
-    
+
     for depth in range(1, max_depth + 1):  # Iteratively deepen the search
         print(f"Searching at depth {depth}...")
         current_best_move = None
         current_best_value = float('-inf')
-
-        for move in get_all_possible_moves(board, player):  # -1 is Black (AI)
-            new_board = board.custom_copy()
+        moves = get_all_possible_moves(board, player)
+        for move in moves:  # -1 is Black (AI)
+            flag = -1  # place = 0 | # move = 1
+            # new_board = board.custom_copy()
             start, end = move
-            piece = find_piece_by_position(new_board, start)
+            piece = find_piece_by_position(board, start)
+
             x, y = start
             if (x < 0) and (y < 0):
-                new_board.board_logic.place_piece(piece, end)
+                board.board_logic.place_piece(piece, end)
+                flag = 0
             else:
-                new_board.board_logic.make_move(move)
-            move_value = minimax_with_alpha_beta(new_board,(-1*player) ,depth - 1, alpha, beta, False)
+                board.board_logic.make_move(move)
+                flag = 1
+            move_value = minimax_with_alpha_beta(board, (-1 * player), depth - 1, alpha, beta, False)
+            undo(board.board_logic, flag, start, end, piece)
 
             if move_value > current_best_value:
                 current_best_value = move_value
@@ -334,8 +364,56 @@ def find_best_move_with_iterative_deepening(board,player,max_depth,time_limit=5)
     return best_move
 
 
-
-
+#
+# board = pygame_widget()
+# board.pieces = [
+#             Piece(type=-1, position=(-1, -1), insect_type="Ant", board=board.board_logic, player=1, color=(139, 69, 19), pos_gui=(750, 50),value= 5),
+#             Piece(type=-1, position=(-2, -2), insect_type="Ant", board=board.board_logic, player=1, color=(139, 69, 19), pos_gui=(800, 50),value= 5),
+#             Piece(type=-1, position=(3, 1), insect_type="Ant", board=board.board_logic, player=1, color=(139, 69, 19), pos_gui=(850, 50),value= 5),
+#             Piece(type=-1, position=(2, 1), insect_type="Beetle", board=board.board_logic, player=1, color=(0, 0, 255), pos_gui=(750, 100),value= 5),
+#             Piece(type=-1, position=(-5, -5), insect_type="Beetle", board=board.board_logic, player=1, color=(0, 0, 255), pos_gui=(800, 100),value= 5),
+#             Piece(type=-1, position=(1, 1), insect_type="Hopper", board=board.board_logic, player=1, color=(0, 255, 0), pos_gui=(750, 150),value= 5),
+#             Piece(type=-1, position=(-7, -7), insect_type="Hopper", board=board.board_logic, player=1, color=(0, 255, 0), pos_gui=(800, 150),value= 5),
+#             Piece(type=-1, position=(-8, -8), insect_type="Hopper", board=board.board_logic, player=1, color=(0, 255, 0), pos_gui=(850, 150),value= 5),
+#             Piece(type=-2, position=(4, 1), insect_type="Qbee", board=board.board_logic, player=1, color=(255, 255, 0), pos_gui=(750, 200),value= 5),
+#             Piece(type=-1, position=(4, 2), insect_type="Spider", board=board.board_logic, player=1, color=(255, 0, 0), pos_gui=(750, 250),value= 5),
+#             Piece(type=-1, position=(-11, -11), insect_type="Spider", board=board.board_logic, player=1, color=(255, 0, 0), pos_gui=(800, 250),value= 5),
+#             Piece(type=1, position=(-12, -12), insect_type="Ant", board=board.board_logic, player=2, color=(139, 69, 19), pos_gui=(750, 450),value= 5),
+#             Piece(type=1, position=(-13, -13), insect_type="Ant", board=board.board_logic, player=2, color=(139, 69, 19), pos_gui=(800, 450),value= 5),
+#              Piece(type=1, position=(1, 3), insect_type="Ant", board=board.board_logic, player=2, color=(139, 69, 19), pos_gui=(850, 450),value= 5),
+#             Piece(type=1, position=(2, 2), insect_type="Beetle", board=board.board_logic, player=2, color=(0, 0, 255), pos_gui=(750, 500),value= 5),
+#             Piece(type=1, position=(-16, -16), insect_type="Beetle", board=board.board_logic, player=2, color=(0, 0, 255), pos_gui=(800, 500),value= 5),
+#             Piece(type=1, position=(-17, -17), insect_type="Hopper", board=board.board_logic, player=2, color=(0, 255, 0), pos_gui=(750, 550),value= 5),
+#             Piece(type=1, position=(-18, -18), insect_type="Hopper", board=board.board_logic, player=2, color=(0, 255, 0), pos_gui=(800, 550),value= 5),
+#             Piece(type=1, position=(2, 3), insect_type="Hopper", board=board.board_logic, player=2, color=(0, 255, 0), pos_gui=(850, 550),value= 5),
+#             Piece(type=2, position=(1, 4), insect_type="Qbee", board=board.board_logic, player=2, color=(255, 255, 0), pos_gui=(750, 600),value= 5),
+#             Piece(type=1, position=(-21, -21), insect_type="Spider", board=board.board_logic, player=2, color=(255, 0, 0), pos_gui=(750, 650),value= 5),
+#             Piece(type=1, position=(2, 4), insect_type="Spider", board=board.board_logic, player=2, color=(255, 0, 0), pos_gui=(800, 650),value= 5),
+#             # Add other pieces similarly...
+#         ]
+#
+# board.board_logic.pieces = [
+#             Piece(type=-1, position=(3, 1), insect_type="Ant", board=board.board_logic, player=1, color=(139, 69, 19), pos_gui=(850, 50),value= 5),
+#             Piece(type=-1, position=(2, 1), insect_type="Beetle", board=board.board_logic, player=1, color=(0, 0, 255), pos_gui=(750, 100),value= 5),
+#             Piece(type=-1, position=(1, 1), insect_type="Hopper", board=board.board_logic, player=1, color=(0, 255, 0), pos_gui=(750, 150),value= 5),
+#             Piece(type=-2, position=(4, 1), insect_type="Qbee", board=board.board_logic, player=1, color=(255, 255, 0), pos_gui=(750, 200),value= 5),
+#             Piece(type=-1, position=(4, 2), insect_type="Spider", board=board.board_logic, player=1, color=(255, 0, 0), pos_gui=(750, 250),value= 5),
+#             Piece(type=1, position=(1, 3), insect_type="Ant", board=board.board_logic, player=2, color=(139, 69, 19), pos_gui=(850, 450),value= 5),
+#             Piece(type=1, position=(2, 2), insect_type="Beetle", board=board.board_logic, player=2, color=(0, 0, 255), pos_gui=(750, 500),value= 5),
+#             Piece(type=1, position=(2, 3), insect_type="Hopper", board=board.board_logic, player=2, color=(0, 255, 0), pos_gui=(850, 550),value= 5),
+#             Piece(type=2, position=(1, 4), insect_type="Qbee", board=board.board_logic, player=2, color=(255, 255, 0), pos_gui=(750, 600),value= 5),
+#             Piece(type=1, position=(2, 4), insect_type="Spider", board=board.board_logic, player=2, color=(255, 0, 0), pos_gui=(800, 650),value= 5),
+#             # Add other pieces similarly...
+#         ]
+#
+# best_move = find_best_move_with_iterative_deepening(board ,1 ,3, 1000000)
+#
+# # # Test finding the best move
+# # best_move = find_best_move_alpha_beta(board, depth=4)
+# if best_move:
+#     print("Best Move:", best_move)
+# else:
+#     print("No valid moves found. Game may be over.")
 #
 #
 #
@@ -397,7 +475,7 @@ def find_best_move_with_iterative_deepening(board,player,max_depth,time_limit=5)
 # board.display()
 #
 #
-# best_move = find_best_move_with_iterative_deepening(board,-1 ,5, 5)
+#
 #
 #
 # # # Test finding the best move

@@ -8,7 +8,7 @@ from PyQt5.QtGui import QPainter, QImage
 import math
 from piecesboard import Board, Piece  # Importing the logic from the provided file
 import ai
-
+import config
 from config import config
 
 def update_scores(black, white):
@@ -278,7 +278,10 @@ class pygame_widget(QWidget):
             for piece in self.pieces:
                 piece.board = self.board_logic
             #self.selected_piece.board = self.board_logic
-            QTimer.singleShot(10, self.execute_ai_move)
+            if (config.player1 == "Human") and (config.player2 == "Human"):
+                f = 0
+            elif (config.player1 == "Human") and (config.player2 == "Computer"):
+                QTimer.singleShot(30, self.execute_ai_move)
         else:
             # Invalid move, return piece to its start position
             self.selected_piece.pos_gui = self.start_gui_position
@@ -288,7 +291,8 @@ class pygame_widget(QWidget):
         self.selected_piece = None  # Deselect the piece
 
 
-        update_scores(black=20, white=15)
+
+
 
 
 
@@ -296,7 +300,11 @@ class pygame_widget(QWidget):
 
     def execute_ai_move(self):
         """Execute AI's move after player's turn."""
-        best_move = ai.find_best_move_with_iterative_deepening(self, -1, 3, 100)
+        if (config.player1 == "Human") and (config.player2 == "Computer"):
+            no = -1
+        elif (config.player1 == "Computer") and (config.player2 == "Human"):
+            no = 1
+        best_move = ai.find_best_move_with_iterative_deepening(self, no, 2, 100)
         print(f"AI Move: {best_move}")
 
         if not best_move:

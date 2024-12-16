@@ -1127,7 +1127,7 @@ class Piece:
         x,y = self.position
         if x < 0 and y < 0 :  # The piece is outside the board (not used yet)
             if self.board.check_empty_board():  # If the board is empty
-                self.valid_moves = [(4, 3)]
+                self.valid_moves = [(4, 4)]
                 return self.valid_moves  # Place the piece at the center of the board
             elif len(self.board.pieces) == 1:
                 old_piece = self.board.pieces[0].position
