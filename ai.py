@@ -1,5 +1,6 @@
 from piecesboard import Piece,Board
 from game import Game
+from pygame_widget import pygame_widget
 
 import copy
 
@@ -42,7 +43,7 @@ def evaluate_board(board_obj,player):
         if white_queen:
             for piece in board_obj.pieces:
                 x, y = piece.position
-                if ((x > 0) and (y > 0)) and piece.piece_type in [-1, -2]:  # AI's pieces
+                if ((x > 0) and (y > 0)) and piece.type in [-1, -2]:  # AI's pieces
                     distance = calculate_distance(piece.position, white_queen.position)
                     proximity_score += max(0, 10 - distance)  # Reward closer pieces
     else:
@@ -56,7 +57,7 @@ def evaluate_board(board_obj,player):
                 x, y = piece.position
                 if ((x > 0) and (y > 0)) and piece.type in [1, 2]:  # AI's pieces
                     distance = calculate_distance(piece.position, black_queen.position)
-                    proximity_score += max(0, 10 - distance)  # Reward closer pieces
+                    proximity_score += max(0, 30 - distance)  # Reward closer pieces
 
     # Fallback to piece values if queens are missing
     # piece_value_score = sum(piece.value for piece in board_obj.pieces if piece.position != (-1, -1))
@@ -159,7 +160,7 @@ def minimax(board, depth, is_maximizing_player):
         max_eval = float('-inf')
         for move in get_all_possible_moves(board, -1):  # -1 is Black
             new_board =board.custom_copy()
-            new_board = new_board.board_logic.make_move(move)
+            new_board.board_logic.make_move(move)
             eval = minimax(new_board, depth - 1, False)
             max_eval = max(max_eval, eval)
         return max_eval
@@ -167,7 +168,7 @@ def minimax(board, depth, is_maximizing_player):
         min_eval = float('inf')
         for move in get_all_possible_moves(board, 1):  # 1 is White
             new_board =board.custom_copy()
-            new_board = new_board.board_logic.make_move(move)
+            new_board.board_logic.make_move(move)
             eval = minimax(new_board, depth - 1, True)
             min_eval = min(min_eval, eval)
         return min_eval
@@ -191,9 +192,9 @@ def minimax_with_alpha_beta(board,player,depth, alpha, beta, is_maximizing_playe
             piece = find_piece_by_position(new_board, start)
             x, y = start
             if (x < 0) and (y < 0):
-                new_board = new_board.board_logic.place_piece(piece, end)
+                new_board.board_logic.place_piece(piece, end)
             else:
-                new_board = new_board.board_logic.make_move(move)
+                new_board.board_logic.make_move(move)
 
             evall = minimax_with_alpha_beta(new_board,(-1*player) ,depth - 1, alpha, beta, False)
             max_eval = max(max_eval, evall)
@@ -209,9 +210,9 @@ def minimax_with_alpha_beta(board,player,depth, alpha, beta, is_maximizing_playe
             piece = find_piece_by_position(new_board, start)
             x, y = start
             if (x < 0) and (y < 0):
-                new_board = new_board.board_logic.place_piece(piece, end)
+                new_board.board_logic.place_piece(piece, end)
             else:
-                new_board = new_board.board_logic.make_move(move)
+                new_board.board_logic.make_move(move)
             evall = minimax_with_alpha_beta(new_board,(-1*player) ,depth - 1, alpha, beta, True)
             min_eval = min(min_eval, evall)
             beta = min(beta, evall)
@@ -235,7 +236,7 @@ def find_best_move(board, depth):
     
     for move in all_moves:
         new_board =board.custom_copy()
-        new_board = new_board.board_logic.make_move(move)
+        new_board.board_logic.make_move(move)
         move_value = minimax(new_board, depth-1, False)
         if move_value > best_value:
             best_value = move_value
@@ -263,7 +264,8 @@ def find_best_move_alpha_beta(board, depth):
 
     for move in all_moves:
         new_board = board.custom_copy()
-        new_board = new_board.board_logic.make_move(move)
+        new_board.board_logic.make_move(move)
+            
         move_value = minimax_with_alpha_beta(new_board, depth - 1, alpha, beta, False)
         if move_value > best_value:
             best_value = move_value
@@ -330,6 +332,8 @@ def find_best_move_with_iterative_deepening(board,player,max_depth,time_limit=5)
             break
 
     return best_move
+
+
 
 
 #

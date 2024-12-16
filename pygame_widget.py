@@ -75,7 +75,7 @@ class pygame_widget(QWidget):
         # Pygame loop timer
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.run_pygame)
-        self.timer.start(200)  # ~60 FPS
+        self.timer.start(1000)  # ~60 FPS
 
         # Set the size of the QWidget
         self.setFixedSize(900, 800)
@@ -263,6 +263,7 @@ class pygame_widget(QWidget):
             for piece in self.pieces:
                 piece.board = self.board_logic
             #self.selected_piece.board = self.board_logic
+            QTimer.singleShot(10, self.execute_ai_move)
         else:
             # Invalid move, return piece to its start position
             self.selected_piece.pos_gui = self.start_gui_position
@@ -271,11 +272,11 @@ class pygame_widget(QWidget):
 
         self.selected_piece = None  # Deselect the piece
 
-        QTimer.singleShot(10, self.execute_ai_move)
+        
 
     def execute_ai_move(self):
         """Execute AI's move after player's turn."""
-        best_move = ai.find_best_move_with_iterative_deepening(self, -1, 3, 1000000)
+        best_move = ai.find_best_move_with_iterative_deepening(self, -1, 3, 100)
         print(f"AI Move: {best_move}")
 
         if not best_move:
