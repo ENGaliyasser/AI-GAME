@@ -3,7 +3,7 @@ import copy
 import pygame
 import sys
 from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout, QMainWindow , QPushButton
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPainter, QImage
 import math
 from piecesboard import Board, Piece  # Importing the logic from the provided file
@@ -15,8 +15,10 @@ class pygame_widget(QWidget):
 
         # Initialize Pygame
         pygame.init()
+        # self.screen = pygame.Surface((900, 800))  # Offscreen surface for rendering
+        self.display = pygame.display.set_mode((900, 800))  # Main Pygame window
         self.screen = pygame.Surface((900, 800))  # Offscreen surface for rendering
-
+        pygame.display.set_caption("Hive AI Game")
         # Game variables
         self.hex_radius = 25* math.sqrt(3)
         self.grid_rows = 10
@@ -279,7 +281,7 @@ class pygame_widget(QWidget):
             return
 
         start_pos, end_pos = best_move
-        ai_piece = self.find_piece_by_position(self.board_logic, start_pos)
+        ai_piece = self.find_piece_by_position(self, start_pos)
 
         if ai_piece is None:
             print(f"Error: No piece found at {start_pos}. AI move is invalid.")
@@ -297,21 +299,33 @@ class pygame_widget(QWidget):
         # Debug: Ensure piece positions are consistent
         print(f"Updated AI piece positions: {[piece.position for piece in self.pieces]}")
 
-        # Repaint the screen to reflect the AI move
-        self.update()
+        self.refresh_game_display()
 
 
         # for piece in self.pieces:
         #     piece.board = self.board_logic
 
+    def refresh_game_display(self):
+        """Refresh the game display to reflect the latest game state."""
+        # Clear the screen
+        self.screen.fill((240, 240, 240))
 
-    def find_piece_by_position(board, position):
+        # Redraw the hexagonal grid and all pieces
+        self.draw_hex_grid()
+        self.draw_pieces()
+
+        # Update the Pygame display
+        pygame.display.flip()
+
+        # Repaint PyQt widget if integrated
+        self.update()
+
+    def find_piece_by_position(self, board, position):
         """Find the piece object at the given position."""
-        for piece in board.board_logic.pieces:
+        for piece in board.pieces:  # Access pieces directly from the board
             if piece.position == position:
                 return piece
         return None
-
 
     def is_point_in_hex(self, point, center):
         """Check if a point is inside a hexagon."""
@@ -319,6 +333,8 @@ class pygame_widget(QWidget):
         cx, cy = center
         dx, dy = abs(px - cx), abs(py - cy)
         return dx <= self.hex_radius * 1.5 and dy <= self.hex_radius * (3 ** 0.5) / 2
+
+
 
 
 # Main application code
