@@ -1,3 +1,5 @@
+import copy
+
 import pygame
 import sys
 from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout, QMainWindow , QPushButton
@@ -5,6 +7,7 @@ from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QPainter, QImage
 import math
 from piecesboard import Board, Piece  # Importing the logic from the provided file
+import ai
 
 class pygame_widget(QWidget):
     def __init__(self, parent=None):
@@ -31,27 +34,27 @@ class pygame_widget(QWidget):
         # Initialize game pieces as instances of the Piece class
         self.pieces = [
             Piece(type=-1, position=(-1, -1), insect_type="Ant", board=self.board_logic, player=1, color=(139, 69, 19), pos_gui=(750, 50)),
-            Piece(type=-1, position=(-1, -1), insect_type="Ant", board=self.board_logic, player=1, color=(139, 69, 19), pos_gui=(800, 50)),
-            Piece(type=-1, position=(-1, -1), insect_type="Ant", board=self.board_logic, player=1, color=(139, 69, 19), pos_gui=(850, 50)),
-            Piece(type=-1, position=(-1, -1), insect_type="Beetle", board=self.board_logic, player=1, color=(0, 0, 255), pos_gui=(750, 100)),
-            Piece(type=-1, position=(-1, -1), insect_type="Beetle", board=self.board_logic, player=1, color=(0, 0, 255), pos_gui=(800, 100)),
-            Piece(type=-1, position=(-1, -1), insect_type="Hopper", board=self.board_logic, player=1, color=(0, 255, 0), pos_gui=(750, 150)),
-            Piece(type=-1, position=(-1, -1), insect_type="Hopper", board=self.board_logic, player=1, color=(0, 255, 0), pos_gui=(800, 150)),
-            Piece(type=-1, position=(-1, -1), insect_type="Hopper", board=self.board_logic, player=1, color=(0, 255, 0), pos_gui=(850, 150)),
-            Piece(type=-2, position=(-1, -1), insect_type="Qbee", board=self.board_logic, player=1, color=(255, 255, 0), pos_gui=(750, 200)),
-            Piece(type=-1, position=(-1, -1), insect_type="Spider", board=self.board_logic, player=1, color=(255, 0, 0), pos_gui=(750, 250)),
-            Piece(type=-1, position=(-1, -1), insect_type="Spider", board=self.board_logic, player=1, color=(255, 0, 0), pos_gui=(800, 250)),
-            Piece(type=1, position=(-1, -1), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(750, 450)),
-            Piece(type=1, position=(-1, -1), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(800, 450)),
-            Piece(type=1, position=(-1, -1), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(850, 450)),
-            Piece(type=1, position=(-1, -1), insect_type="Beetle", board=self.board_logic, player=2, color=(0, 0, 255), pos_gui=(750, 500)),
-            Piece(type=1, position=(-1, -1), insect_type="Beetle", board=self.board_logic, player=2, color=(0, 0, 255), pos_gui=(800, 500)),
-            Piece(type=1, position=(-1, -1), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(750, 550)),
-            Piece(type=1, position=(-1, -1), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(800, 550)),
-            Piece(type=1, position=(-1, -1), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(850, 550)),
-            Piece(type=2, position=(-1, -1), insect_type="Qbee", board=self.board_logic, player=2, color=(255, 255, 0), pos_gui=(750, 600)),
-            Piece(type=1, position=(-1, -1), insect_type="Spider", board=self.board_logic, player=2, color=(255, 0, 0), pos_gui=(750, 650)),
-            Piece(type=1, position=(-1, -1), insect_type="Spider", board=self.board_logic, player=2, color=(255, 0, 0), pos_gui=(800, 650)),
+            Piece(type=-1, position=(-2, -2), insect_type="Ant", board=self.board_logic, player=1, color=(139, 69, 19), pos_gui=(800, 50)),
+            Piece(type=-1, position=(-3, -3), insect_type="Ant", board=self.board_logic, player=1, color=(139, 69, 19), pos_gui=(850, 50)),
+            Piece(type=-1, position=(-4, -4), insect_type="Beetle", board=self.board_logic, player=1, color=(0, 0, 255), pos_gui=(750, 100)),
+            Piece(type=-1, position=(-5, -5), insect_type="Beetle", board=self.board_logic, player=1, color=(0, 0, 255), pos_gui=(800, 100)),
+            Piece(type=-1, position=(-6, -6), insect_type="Hopper", board=self.board_logic, player=1, color=(0, 255, 0), pos_gui=(750, 150)),
+            Piece(type=-1, position=(-7, -7), insect_type="Hopper", board=self.board_logic, player=1, color=(0, 255, 0), pos_gui=(800, 150)),
+            Piece(type=-1, position=(-8, -8), insect_type="Hopper", board=self.board_logic, player=1, color=(0, 255, 0), pos_gui=(850, 150)),
+            Piece(type=-2, position=(-9, -9), insect_type="Qbee", board=self.board_logic, player=1, color=(255, 255, 0), pos_gui=(750, 200)),
+            Piece(type=-1, position=(-10, -10), insect_type="Spider", board=self.board_logic, player=1, color=(255, 0, 0), pos_gui=(750, 250)),
+            Piece(type=-1, position=(-11, -11), insect_type="Spider", board=self.board_logic, player=1, color=(255, 0, 0), pos_gui=(800, 250)),
+            Piece(type=1, position=(-12, -12), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(750, 450)),
+            Piece(type=1, position=(-13, -13), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(800, 450)),
+            Piece(type=1, position=(-14, -14), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(850, 450)),
+            Piece(type=1, position=(-15, -15), insect_type="Beetle", board=self.board_logic, player=2, color=(0, 0, 255), pos_gui=(750, 500)),
+            Piece(type=1, position=(-16, -16), insect_type="Beetle", board=self.board_logic, player=2, color=(0, 0, 255), pos_gui=(800, 500)),
+            Piece(type=1, position=(-17, -17), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(750, 550)),
+            Piece(type=1, position=(-18, -18), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(800, 550)),
+            Piece(type=1, position=(-19, -19), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(850, 550)),
+            Piece(type=2, position=(-20, -20), insect_type="Qbee", board=self.board_logic, player=2, color=(255, 255, 0), pos_gui=(750, 600)),
+            Piece(type=1, position=(-21, -21), insect_type="Spider", board=self.board_logic, player=2, color=(255, 0, 0), pos_gui=(750, 650)),
+            Piece(type=1, position=(-22, -22), insect_type="Spider", board=self.board_logic, player=2, color=(255, 0, 0), pos_gui=(800, 650)),
             # Add other pieces similarly...
         ]
 
@@ -76,6 +79,19 @@ class pygame_widget(QWidget):
         self.centralize_button = QPushButton("Centralize Pieces", self)
         # self.centralize_button.clicked.connect(self.centralize_pieces)
         self.centralize_button.move(10, 10)
+
+    def custom_copy(self):
+        # Create a new instance of the class
+        new_instance = pygame_widget()
+
+        # Deep copy the board logic
+        if self.board_logic:
+            new_instance.board_logic = copy.deepcopy(self.board_logic)
+
+        # Deep copy the pieces
+        new_instance.pieces = copy.deepcopy(self.pieces)
+
+        return new_instance
 
     def grid_to_pixel(self, row, col):
         """Convert grid (row, col) to pixel (x, y)."""
@@ -251,6 +267,51 @@ class pygame_widget(QWidget):
 
         self.selected_piece = None  # Deselect the piece
 
+        QTimer.singleShot(500, self.execute_ai_move)
+
+    def execute_ai_move(self):
+        """Execute AI's move after player's turn."""
+        best_move = ai.find_best_move_with_iterative_deepening(self, -1, 2, 10000000000)
+        print(f"AI Move: {best_move}")
+
+        if not best_move:
+            print("No valid AI move found. Skipping AI turn.")
+            return
+
+        start_pos, end_pos = best_move
+        ai_piece = self.find_piece_by_position(self.board_logic, start_pos)
+
+        if ai_piece is None:
+            print(f"Error: No piece found at {start_pos}. AI move is invalid.")
+            return
+
+        row1, col1 = end_pos
+        ai_piece.position = (row1, col1)  # Update grid position
+        ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
+        print(f"AI Piece placed at grid: ({row1}, {col1})")
+
+        # Update board logic
+        self.board_logic.place_piece(ai_piece, (row1, col1))
+        self.board_logic.display()
+
+        # Debug: Ensure piece positions are consistent
+        print(f"Updated AI piece positions: {[piece.position for piece in self.pieces]}")
+
+        # Repaint the screen to reflect the AI move
+        self.update()
+
+
+        # for piece in self.pieces:
+        #     piece.board = self.board_logic
+
+
+    def find_piece_by_position(board, position):
+        """Find the piece object at the given position."""
+        for piece in board.board_logic.pieces:
+            if piece.position == position:
+                return piece
+        return None
+
 
     def is_point_in_hex(self, point, center):
         """Check if a point is inside a hexagon."""
@@ -268,7 +329,6 @@ class MainWindow(QMainWindow):
         # Create central widget and layout
         central_widget = QWidget(self)
         layout = QVBoxLayout(central_widget)
-
         # Add Pygame widget to the layout
         pygame_display = pygame_widget()
         layout.addWidget(pygame_display)

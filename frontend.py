@@ -4,8 +4,7 @@ import PyQt5.QtWidgets
 from pygame_widget import pygame_widget
 
 import os
-import numpy as np
-import pandas as pd
+
 from gui import Ui_MainWindow
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
