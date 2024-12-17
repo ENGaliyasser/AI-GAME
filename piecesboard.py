@@ -135,3 +135,232 @@ class Board:
         for row in self.board_2d:
             print(" | ".join(str(cell) if cell else "." for cell in row))
             print("-" * (self.size * 4 - 1))
+
+
+class Piece:
+    def __init__(self, type: int, position: tuple[int, int], insect_type: str, board: Board, player: int = 0,
+                 color: tuple[int, int, int] = (0, 0, 0), pos_gui: tuple[int, int] = (0, 0), value=5):
+        """
+        type
+        -1 ---->black
+        -2 -----> Queen Bee Black
+         1 ----->white
+         2 ---->Queen Bee White
+
+        position
+        -1,-1 --> outside the board
+        """
+        self.type = type
+        self.position = position
+        self.insect_type = insect_type
+        self.valid_moves = None  
+        self.board = board
+        self.value = value
+        self.player = player
+        self.color = color
+        self.pos_gui = pos_gui
+        
+
+    def check_coordinates(self, x: int, y: int):
+        # Check if (x is even and y is even) or (x is odd and y is even)
+        if (x % 2 == 0 and y % 2 == 0) or (x % 2 != 0 and y % 2 == 0):
+            return [(x - 1, y), (x - 1, y + 1), (x, y + 1), (x + 1, y), (x, y - 1), (x - 1, y - 1)]
+        else:
+            return [(x + 1, y), (x + 1, y - 1), (x + 1, y + 1), (x, y - 1), (x, y + 1), (x - 1, y)]
+
+    def get_free_region_of_piece(self, piece: 'Piece'):
+        x, y = piece.position
+        list = piece.check_coordinates(x, y)
+        returnList = []
+        for i in range(6):
+            x, y = list[i]
+            if self.board.board_2d[x][y] == 0:
+                returnList.append((x, y))
+
+        return returnList
+
+    def get_occupied_region_of_piece(self, piece: 'Piece'):
+        x, y = piece.position
+        list = piece.check_coordinates(x, y)
+        returnList = []
+        for i in range(6):
+            x, y = list[i]
+            if self.board.board_2d[x][y] != 0:
+                returnList.append((x, y))
+
+        return returnList
+
+    def around_the_hive(self, x: int, y: int) -> list[tuple[int, int]]:
+        """
+        Determines the intersection of free regions around the hive based on occupied regions.
+
+        Args:
+            x (int): The x-coordinate of the piece.
+            y (int): The y-coordinate of the piece.
+
+        Returns:
+            list[tuple[int, int]]: A list of coordinates representing valid moves around the hive.
+        """
+        # Get the occupied regions around the given coordinates
+        occupied_regions = self.get_occupied_region_of_piece(Piece(self.type, (x, y), self.insect_type, self.board))
+
+        # Get the free regions of the given coordinates
+        free_regions = set(self.get_free_region_of_piece(Piece(self.type, (x, y), self.insect_type, self.board)))
+
+        # Calculate the free regions of all occupied neighbors
+        free_around_neighbors = set()
+        for neighbor_x, neighbor_y in occupied_regions:
+            free_around_neighbors.update(
+                self.get_free_region_of_piece(Piece(self.type, (neighbor_x, neighbor_y), self.insect_type, self.board)))
+
+        # Return the intersection of the free regions
+        return list(free_regions & free_around_neighbors)
+
+    def check_free_to_slide(self, point1: tuple[int, int], point2: tuple[int, int]) -> bool:
+
+        x1, y1 = point1
+        x2, y2 = point2
+
+        # Get the surrounding coordinates for both points
+        neighbors_point1 = set(self.check_coordinates(x1, y1))
+        neighbors_point2 = set(self.check_coordinates(x2, y2))
+
+        # Find the intersection of the neighbors
+        intersection = neighbors_point1 & neighbors_point2
+        if len(list(intersection)) < 2:
+            return True
+        x1, y1 = list(intersection)[0]
+        x2, y2 = list(intersection)[1]
+
+        # Check if both points on the board are occupied
+        if self.board.board_2d[x1][y1] != 0 and self.board.board_2d[x2][y2] != 0:
+            return False
+        else:
+            return True
+
+    def hopper_get_valid_pos_of_direction(self, direction: tuple[int, int], piece_position: tuple[int, int]):
+        x, y = piece_position
+        if (x % 2 == 0 and y % 2 == 0) or (x % 2 != 0 and y % 2 == 0):
+            if direction == HexMoveCaseEvenEven.TOP.value:
+                x, y = piece_position
+                while (self.board.board_2d[x][y] != 0):
+                    x = x - 1
+
+                return (x, y)
+
+            elif direction == HexMoveCaseEvenEven.DOWN.value:
+                x, y = piece_position
+                while (self.board.board_2d[x][y] != 0):
+                    x = x + 1
+
+                return (x, y)
+
+            elif direction == HexMoveCaseEvenEven.TOP_LEFT.value:
+                counter = 0
+                x, y = piece_position
+
+                while (self.board.board_2d[x][y] != 0):
+                    y = y - 1
+                    if counter % 2 == 0:
+                        x = x - 1
+                    counter = counter + 1
+
+                return (x, y)
+
+            elif direction == HexMoveCaseEvenEven.TOP_RIGHT.value:
+                counter = 0
+                x, y = piece_position
+
+                while (self.board.board_2d[x][y] != 0):
+                    y = y + 1
+                    if counter % 2 == 0:
+                        x = x - 1
+                    counter = counter + 1
+
+                return (x, y)
+
+            elif direction == HexMoveCaseEvenEven.LOWER_LEFT.value:
+                counter = 0
+                x, y = piece_position
+
+                while (self.board.board_2d[x][y] != 0):
+                    y = y - 1
+                    if counter % 2 != 0:
+                        x = x + 1
+                    counter = counter + 1
+
+                return (x, y)
+
+            elif direction == HexMoveCaseEvenEven.LOWER_RIGHT.value:
+                counter = 0
+                x, y = piece_position
+
+                while (self.board.board_2d[x][y] != 0):
+                    y = y + 1
+                    if counter % 2 != 0:
+                        x = x + 1
+                    counter = counter + 1
+
+                return (x, y)
+
+        else:
+            if direction == HexMoveCaseOddOdd.TOP.value:
+                x, y = piece_position
+                while (self.board.board_2d[x][y] != 0):
+                    x = x - 1
+
+                return (x, y)
+
+            elif direction == HexMoveCaseOddOdd.DOWN.value:
+                x, y = piece_position
+                while (self.board.board_2d[x][y] != 0):
+                    x = x + 1
+
+                return (x, y)
+
+            elif direction == HexMoveCaseOddOdd.TOP_LEFT.value:
+                counter = 0
+                x, y = piece_position
+
+                while (self.board.board_2d[x][y] != 0):
+                    y = y - 1
+                    if counter % 2 != 0:
+                        x = x - 1
+                    counter = counter + 1
+
+                return (x, y)
+
+            elif direction == HexMoveCaseOddOdd.TOP_RIGHT.value:
+                counter = 0
+                x, y = piece_position
+
+                while (self.board.board_2d[x][y] != 0):
+                    y = y + 1
+                    if counter % 2 != 0:
+                        x = x - 1
+                    counter = counter + 1
+                return (x, y)
+
+            elif direction == HexMoveCaseOddOdd.LOWER_LEFT.value:
+                counter = 0
+                x, y = piece_position
+
+                while (self.board.board_2d[x][y] != 0):
+                    y = y - 1
+                    if counter % 2 == 0:
+                        x = x + 1
+                    counter = counter + 1
+
+                return (x, y)
+
+            elif direction == HexMoveCaseOddOdd.LOWER_RIGHT.value:
+                counter = 0
+                x, y = piece_position
+
+                while (self.board.board_2d[x][y] != 0):
+                    y = y + 1
+                    if counter % 2 == 0:
+                        x = x + 1
+                    counter = counter + 1
+
+                return (x, y)
