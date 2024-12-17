@@ -455,3 +455,146 @@ class Piece:
             if self.check_hive_connectivity_after_move(new_move):
                 final.add(new_move)
         return list(final)
+    def spider_valid_moves(self):
+
+        x, y = self.position
+        depth = 3
+
+        # Initialize the set for the current level
+        current_level_moves = set()
+
+        # Start with the positions around the hive
+        initial_moves = self.around_the_hive(x, y)
+
+        # Filter initial moves based on sliding rules
+        for move in initial_moves:
+            if self.check_free_to_slide((x, y), move):
+                current_level_moves.add(move)
+
+        self.board.board_2d[x][y] = 0
+        # Track moves specifically at the third level
+        level_three_moves = set()
+        level_two_moves = set()
+        # Expand moves for each current valid move
+        for move_x, move_y in list(current_level_moves):
+            additional_moves = self.around_the_hive(move_x, move_y)
+            for new_move in additional_moves:
+                if self.check_free_to_slide((move_x, move_y), new_move):
+                    level_two_moves.add(new_move)
+        for temp in level_two_moves:
+            if temp == self.position:
+                level_two_moves.remove(temp)
+                break
+        level_two_moves = level_two_moves.difference(current_level_moves)
+        for move_x, move_y in list(level_two_moves):
+            additional_moves = self.around_the_hive(move_x, move_y)
+            for new_move in additional_moves:
+                if self.check_free_to_slide((move_x, move_y), new_move):
+                    level_three_moves.add(new_move)
+
+        level_three_moves = level_three_moves.difference(current_level_moves)
+
+        self.board.board_2d[x][y] = self.type
+
+        final = set()
+        for new_move in list(level_three_moves):
+            if self.check_hive_connectivity_after_move(new_move):
+                final.add(new_move)
+        return list(final)
+
+    def get_valid_moves_of_Queen_Bee(self):
+        """
+        Get valid moves for the Queen Bee that maintain hive connectivity.
+
+        Returns:
+            list[tuple[int, int]]: List of valid moves for the Queen Bee.
+        """
+        free_region = self.get_free_region_of_piece(self)
+        valid_moves = []
+
+        for move in free_region:
+            if self.check_hive_connectivity_after_move(move):
+                valid_moves.append(move)
+
+        return valid_moves
+
+    def hopper_valid_moves(self):
+
+        list = self.get_occupied_region_of_piece(self)
+        list_valid = []
+        x1, y1 = self.position
+        for i in range(len(list)):
+            x2, y2 = list[i]
+            x2 = x2 - x1
+            y2 = y2 - y1
+            list_valid.append(self.hopper_get_valid_pos_of_direction((x2, y2), self.position))
+
+        if (list_valid):
+            # The call of One Hive Rule
+            if (self.check_hive_connectivity_after_move(list_valid[0])):
+                return list_valid
+            else:
+                return []
+
+    def beetle_valid_moves(self):
+        x, y = self.position
+        list_final_valid = []
+        list_valid = self.check_coordinates(x, y)
+        # The call of One Hive Rule
+        for i in range(len(list_valid)):
+            if (self.check_hive_connectivity_after_move(list_valid[i])):
+                list_final_valid.append(list_valid[i])
+
+        return list_final_valid
+
+    def get_valid_moves_of_block(self, myTurn: list['Piece'], opponent: list['Piece']):
+        available_list = []
+        excluded_list = []
+        for i in range(len(myTurn)):
+            available_list.extend(self.get_free_region_of_piece(myTurn[i]))
+        available_list = set(available_list)
+
+        for i in range(len(opponent)):
+            excluded_list.extend(self.get_free_region_of_piece(opponent[i]))
+        excluded_list = set(excluded_list)
+
+        return list(available_list - excluded_list)
+
+    def valid_moves_func(self):
+        """
+        Determines the valid moves for the piece based on its position and board state.
+
+        Returns:
+            list[tuple[int, int]]: A list of valid moves as tuples of (row, column).
+        """
+        x,y = self.position
+        if x < 0 and y < 0 :  # The piece is outside the board (not used yet)
+            if self.board.check_empty_board():  # If the board is empty
+                self.valid_moves = [(6, 6)]
+                return self.valid_moves  # Place the piece at the center of the board
+            elif len(self.board.pieces) == 1:
+                old_piece = self.board.pieces[0].position
+                x, y = old_piece  # Unpack the tuple
+                self.valid_moves = self.check_coordinates(x, y)
+                return self.valid_moves
+            else:
+                if self.type == -1 or self.type == -2:
+                    self.valid_moves = self.get_valid_moves_of_block(self.board.black_piece, self.board.white_piece)
+                    return self.valid_moves
+                elif self.type == 1 or self.type == 2:
+                    self.valid_moves = self.get_valid_moves_of_block(self.board.white_piece, self.board.black_piece)
+                    return self.valid_moves
+
+        else:
+            if self.insect_type == "Hopper":
+                return self.hopper_valid_moves()
+            elif self.insect_type == "Beetle":
+                return self.beetle_valid_moves()
+            elif self.insect_type == "Qbee":
+                return self.get_valid_moves_of_Queen_Bee()
+            elif self.insect_type == "Spider":
+                return self.spider_valid_moves()
+            elif self.insect_type == "Ant":
+                return self.ant_valid_moves()
+            else:
+                return []
