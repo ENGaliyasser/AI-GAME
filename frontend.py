@@ -35,7 +35,7 @@ class Back_End_Class(QtWidgets.QWidget, Ui_MainWindow):
         config.whitescore_changed.connect(self.set_white_score)
         config.black_won_changed.connect(self.on_black_won)  # Connect to black won signal
         config.white_won_changed.connect(self.on_white_won)
-
+        config.turn_changed.connect(self.on_turn)
     def go_to_page_1(self):
          """Switch to page 1 in the stacked widget."""
          self.stackedWidget.setCurrentIndex(0)  # Assuming page 2 is at index 1
@@ -79,15 +79,25 @@ class Back_End_Class(QtWidgets.QWidget, Ui_MainWindow):
         """Handle when black wins."""
         if value:  # If black won
             self.stackedWidget.setCurrentIndex(2)  # Go to page 3
-            self.winner_label.setText("Winner: Black")  # Update the winner label
+            self.winner.setText("Winner: Black")  # Update the winner label
             print("Black has won!")
 
     def on_white_won(self, value):
         """Handle when white wins."""
         if value:  # If white won
             self.stackedWidget.setCurrentIndex(2)  # Go to page 3
-            self.winner_label.setText("Winner: White")  # Update the winner label
+            self.winner.setText("Winner: White")  # Update the winner label
             print("White has won!")
+
+    def on_turn(self, value):
+        """Handle turn changes and determine winner based on value."""
+        if value % 2 == 0:  # Even value
+            self.turn.setText("Black")  # Update the winner label
+            print("Black")
+        else:  # Odd value
+
+            self.turn.setText("White")  # Update the winner label
+            print("White")
 
 
 if __name__ == "__main__":
