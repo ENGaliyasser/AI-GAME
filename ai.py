@@ -1,3 +1,4 @@
+
 from piecesboard import Piece, Board
 from game import Game
 
@@ -117,14 +118,17 @@ def game_over(board):
     def is_surrounded(position):
         """Check if a piece at the given position is completely surrounded."""
         x, y = position
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, 1)]
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1),(1,-1),(-1,1)]
+        count = 0
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
             # Check if any adjacent cell is empty
-            if 0 <= nx < board.board_logic.size and 0 <= ny < board.board_logic.size and board.board_logic.board_2d[nx][
-                ny] == 0:
-                return False  # Found an empty adjacent cell
-        return True  # All adjacent cells are occupied
+            if 0 <= nx < board.board_logic.size and 0 <= ny < board.board_logic.size and board.board_logic.board_2d[nx][ny] == 0:
+                count = count + 1  # Found an empty adjacent cell
+        if count <= 1:
+            return True
+        else:
+            return False
 
     def find_piece_position(board, piece_value):
         """Find the position of a specific piece on the board."""
