@@ -364,3 +364,94 @@ class Piece:
                     counter = counter + 1
 
                 return (x, y)
+
+    def is_hive_connected(self):
+        visited = set()
+        all_pieces = [(i, j) for i in range(self.board.size) for j in range(self.board.size) if
+                      self.board.board_2d[i][j] != 0]
+
+        if not all_pieces:
+            return True  # Hive is trivially connected if no pieces
+
+        def dfs(position):
+            visited.add(position)
+            for nx, ny in self.check_coordinates(*position):
+                if (nx, ny) in all_pieces and (nx, ny) not in visited:
+                    dfs((nx, ny))
+
+        # Start DFS from the first piece
+        dfs(all_pieces[0])
+        return len(visited) == len(all_pieces)
+
+    def check_hive_connectivity_after_move(self, move):
+        """
+        Check if the hive remains connected after moving the piece to the specified position.
+
+        Args:
+            move (tuple[int, int]): The position to move the piece to.
+
+        Returns:
+            bool: True if the hive remains connected, False otherwise.
+        """
+        original_position = self.position
+        x, y = original_position
+        original_value = self.board.board_2d[move[0]][move[1]]
+
+        # Simulate the move
+        self.board.board_2d[x][y] = 0  # Remove from current position
+        self.board.board_2d[move[0]][move[1]] = self.type  # Place at new position
+        self.position = move  # Update piece's position
+
+        # Check hive connectivity
+        hive_connected = self.is_hive_connected()
+
+        # Revert the move
+        self.board.board_2d[move[0]][move[1]] = original_value  # Remove from new position
+        self.board.board_2d[x][y] = self.type  # Restore to original position
+        self.position = original_position  # Restore piece's position
+
+        return hive_connected
+
+    def ant_valid_moves(self) -> set[tuple[int, int]]:
+
+        x, y = self.position
+
+        # Initialize the set of valid moves
+        valid_moves = set()
+
+        # Get the initial positions around the hive
+        initial_moves = self.around_the_hive(x, y)
+
+        # Filter initial moves based on sliding rules
+        for move in initial_moves:
+            if self.check_free_to_slide((x, y), move):
+                valid_moves.add(move)
+
+        # Track the size of the set
+        previous_size = -1
+        self.board.board_2d[x][y] = 0
+        # Continue expanding valid moves until no new moves are found
+        while len(valid_moves) != previous_size:
+            previous_size = len(valid_moves)
+
+            # Create a copy of current valid moves to iterate over
+            current_moves = list(valid_moves)
+
+            # Check further moves for each current move
+            for move_x, move_y in current_moves:
+                additional_moves = self.around_the_hive(move_x, move_y)
+                for new_move in additional_moves:
+                    if self.check_free_to_slide((move_x, move_y), new_move):
+                        valid_moves.add(new_move)
+        self.board.board_2d[x][y] = self.type
+
+        for temp in valid_moves:
+            if temp == self.position:
+                valid_moves.remove(temp)
+                break
+
+        final = set()
+        for new_move in list(valid_moves):
+            if self.check_hive_connectivity_after_move(new_move):
+                final.add(new_move)
+        return list(final)
