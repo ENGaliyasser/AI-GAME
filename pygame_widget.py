@@ -238,26 +238,54 @@ class pygame_widget(QWidget):
     def is_odd(number):
         return number % 2 != 0
 
+    def find_piece_position(self,piece_value):
+            """Find the position of a specific piece on the board."""
+            for x in range(self.board_logic.size):
+                for y in range(self.board_logic.size):
+                    if self.board_logic.board_2d[x][y] == piece_value:
+                        return (x, y)
+            return None
+    
     def mousePressEvent(self, event):
         if (config.player1 == "Human") and (config.player2 == "Human"):
             if self.turn % 2 != 0:
                 if self.turn == 7:
-                    for piece in self.pieces:
+                    pos = self.find_piece_position(2)
+                    if not pos :
+                        for piece in self.pieces:
+                            pos = (event.x(), event.y())
+                            row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                            print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                            if piece.type in [ 2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    return               
+                    else:
+                        """Handle mouse press events to select a piece."""
                         pos = (event.x(), event.y())
                         row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
                         print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
-                        if piece.type in [ 2]:
-                            if self.is_point_in_hex(pos, piece.pos_gui):
-                                self.selected_piece = piece
-                                self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
-                                self.start_gui_position = piece.pos_gui  # Save the starting GUI position
-                                self.start_grid_position = piece.position  # Save the starting grid position
-                                print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+                        for piece in self.pieces:
+                            if piece.type in [1 ,2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
 
-                                # Get valid moves for the selected piece
-                                self.valid_moves = self.selected_piece.valid_moves_func()
-                                print(f"Valid moves: {self.valid_moves}")
-                                return
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    return      
                 else:
                     """Handle mouse press events to select a piece."""
                     pos = (event.x(), event.y())
@@ -278,23 +306,42 @@ class pygame_widget(QWidget):
                                 return
             else:
                 if self.turn == 8:
-                    """Handle mouse press events to select a piece."""
-                    pos = (event.x(), event.y())
-                    row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
-                    print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
-                    for piece in self.pieces:
-                        if piece.type in [-2]:
-                            if self.is_point_in_hex(pos, piece.pos_gui):
-                                self.selected_piece = piece
-                                self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
-                                self.start_gui_position = piece.pos_gui  # Save the starting GUI position
-                                self.start_grid_position = piece.position  # Save the starting grid position
-                                print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+                    pos = self.find_piece_position(-2)
+                    if not pos :
+                        """Handle mouse press events to select a piece."""
+                        pos = (event.x(), event.y())
+                        row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                        print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                        for piece in self.pieces:
+                            if piece.type in [-2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
 
-                                # Get valid moves for the selected piece
-                                self.valid_moves = self.selected_piece.valid_moves_func()
-                                print(f"Valid moves: {self.valid_moves}")
-                                return
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    return
+                    else:
+                        pos = (event.x(), event.y())
+                        row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                        print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                        for piece in self.pieces:
+                            if piece.type in [-1, -2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    return
                 else:
                     """Handle mouse press events to select a piece."""
                     pos = (event.x(), event.y())
@@ -313,8 +360,65 @@ class pygame_widget(QWidget):
                                 self.valid_moves = self.selected_piece.valid_moves_func()
                                 print(f"Valid moves: {self.valid_moves}")
                                 return
+        elif (config.player1 == "Human") and (config.player2 == "Computer"):
+            if self.turn % 2 != 0:
+                if self.turn == 7:
+                    pos = self.find_piece_position(2)
+                    if not pos :
+                        for piece in self.pieces:
+                            pos = (event.x(), event.y())
+                            row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                            print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                            if piece.type in [ 2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
 
-        else:
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    return
+                    else:
+                        """Handle mouse press events to select a piece."""
+                        pos = (event.x(), event.y())
+                        row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                        print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                        for piece in self.pieces:
+                            if piece.type in [1 ,2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    return   
+                else:
+                    """Handle mouse press events to select a piece."""
+                    pos = (event.x(), event.y())
+                    row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                    print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                    for piece in self.pieces:
+                        if piece.type in [1 ,2]:
+                            if self.is_point_in_hex(pos, piece.pos_gui):
+                                self.selected_piece = piece
+                                self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                self.start_grid_position = piece.position  # Save the starting grid position
+                                print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+
+                                # Get valid moves for the selected piece
+                                self.valid_moves = self.selected_piece.valid_moves_func()
+                                print(f"Valid moves: {self.valid_moves}")
+                                return   
+            
+        else: # AI-AI
             """Handle mouse press events to select a piece."""
             pos = (event.x(), event.y())
             row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
@@ -350,10 +454,18 @@ class pygame_widget(QWidget):
 
         # Validate if the release is within valid moves
         if (row, col) in self.valid_moves:
-            self.selected_piece.position = (row, col)  # Update grid position
-            self.selected_piece.pos_gui = self.grid_to_pixel(row, col)  # Update GUI position
-            print(f"Piece placed at grid: ({row}, {col})")
-            self.board_logic.place_piece(self.selected_piece, (row, col))  # Update board logic
+            x,y = self.selected_piece.position
+            if x<0 and y<0:
+                self.selected_piece.position = (row, col)  # Update grid position
+                self.selected_piece.pos_gui = self.grid_to_pixel(row, col)  # Update GUI position
+                print(f"Piece placed at grid: ({row}, {col})")
+                self.board_logic.place_piece(self.selected_piece, (row, col))  # Update board logic
+            else:
+                fromm = (x,y)
+                to = (row,col)
+                print(f"Piece moved from to: ({fromm}, {to})")
+                self.board_logic.make_move((fromm,to))
+                self.selected_piece.pos_gui = self.grid_to_pixel(row, col)  # Update GUI position
             self.board_logic.display()
             #print(f"This board: {self.board_logic.board_2d} ")
             for piece in self.pieces:
@@ -416,6 +528,7 @@ class pygame_widget(QWidget):
 
         # Debug: Ensure piece positions are consistent
         print(f"Updated AI piece positions: {[piece.position for piece in self.pieces]}")
+        self.turn = self.turn + 1
 
         self.refresh_game_display()
 
