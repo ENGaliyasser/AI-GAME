@@ -182,6 +182,12 @@ class Ui_MainWindow(object):
 "    color: #f1c40f; /* Golden yellow for the title */\n"
 "    text-align: center;\n"
 "}\n"
+"#turn{\n"
+"    font-size: 24px;\n"
+"    font-weight: bold;\n"
+"    color: #000000; /* Golden yellow for the title */\n"
+"    text-align: center;\n"
+"}\n"
 "\n"
 "/* Drop-down Menus */\n"
 "QComboBox {\n"
@@ -258,24 +264,31 @@ class Ui_MainWindow(object):
 "    color: #ecf0f1; /* Light text color */\n"
 "}")
         self.widget.setObjectName("widget")
-        self.gridLayout_3.addWidget(self.widget, 0, 0, 1, 5)
+        self.gridLayout_3.addWidget(self.widget, 0, 0, 1, 7)
+        self.whitescore_2 = QtWidgets.QLabel(self.page_2)
+        self.whitescore_2.setObjectName("whitescore_2")
+        self.gridLayout_3.addWidget(self.whitescore_2, 1, 0, 1, 1)
+        self.turn = QtWidgets.QLabel(self.page_2)
+        self.turn.setAlignment(QtCore.Qt.AlignCenter)
+        self.turn.setObjectName("turn")
+        self.gridLayout_3.addWidget(self.turn, 1, 1, 1, 1)
         self.whitescore = QtWidgets.QLabel(self.page_2)
         self.whitescore.setObjectName("whitescore")
-        self.gridLayout_3.addWidget(self.whitescore, 1, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.whitescore, 1, 2, 1, 1)
         self.w2 = QtWidgets.QLabel(self.page_2)
         self.w2.setAlignment(QtCore.Qt.AlignCenter)
         self.w2.setObjectName("w2")
-        self.gridLayout_3.addWidget(self.w2, 1, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.w2, 1, 3, 1, 1)
         self.Blackscore = QtWidgets.QLabel(self.page_2)
         self.Blackscore.setObjectName("Blackscore")
-        self.gridLayout_3.addWidget(self.Blackscore, 1, 2, 1, 1)
+        self.gridLayout_3.addWidget(self.Blackscore, 1, 4, 1, 1)
         self.b2 = QtWidgets.QLabel(self.page_2)
         self.b2.setAlignment(QtCore.Qt.AlignCenter)
         self.b2.setObjectName("b2")
-        self.gridLayout_3.addWidget(self.b2, 1, 3, 1, 1)
+        self.gridLayout_3.addWidget(self.b2, 1, 5, 1, 1)
         self.endbutton = QtWidgets.QPushButton(self.page_2)
         self.endbutton.setObjectName("endbutton")
-        self.gridLayout_3.addWidget(self.endbutton, 1, 4, 1, 1)
+        self.gridLayout_3.addWidget(self.endbutton, 1, 6, 1, 1)
         self.stackedWidget.addWidget(self.page_2)
         self.page_3 = QtWidgets.QWidget()
         self.page_3.setStyleSheet("/* General Background */\n"
@@ -420,6 +433,8 @@ class Ui_MainWindow(object):
         self.p1.setItemText(0, _translate("MainWindow", "Choose"))
         self.p1.setItemText(1, _translate("MainWindow", "Human"))
         self.p1.setItemText(2, _translate("MainWindow", "Computer"))
+        self.whitescore_2.setText(_translate("MainWindow", "Turn:"))
+        self.turn.setText(_translate("MainWindow", "White"))
         self.whitescore.setText(_translate("MainWindow", "White:"))
         self.w2.setText(_translate("MainWindow", "0"))
         self.Blackscore.setText(_translate("MainWindow", "Black:"))
@@ -427,10 +442,10 @@ class Ui_MainWindow(object):
         self.endbutton.setText(_translate("MainWindow", "END"))
         self.end.setText(_translate("MainWindow", "THE END"))
         self.score_2.setText(_translate("MainWindow", "Black Score:"))
-        self.b1.setText(_translate("MainWindow", "560"))
+        self.b1.setText(_translate("MainWindow", "0"))
         self.winner.setText(_translate("MainWindow", "Player 1 WON"))
         self.startagain.setText(_translate("MainWindow", "Start Again"))
         self.restart.setText(_translate("MainWindow", "Restart"))
         self.score.setText(_translate("MainWindow", "White  Score:"))
-        self.w1.setText(_translate("MainWindow", "560"))
+        self.w1.setText(_translate("MainWindow", "0"))
 from pygame_widget import pygame_widget

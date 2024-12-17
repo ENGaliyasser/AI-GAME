@@ -2,7 +2,7 @@ import copy
 
 import pygame
 import sys
-from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout, QMainWindow , QPushButton
+from PyQt5.QtWidgets import QWidget, QApplication, QVBoxLayout, QMainWindow, QPushButton
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPainter, QImage
 import math
@@ -13,8 +13,8 @@ from config import config
 
 def update_scores(black, white):
     """Update the black and white scores."""
-    config.blackscore = black  # This will trigger the blackscore_changed signal
-    config.whitescore = white  # This will trigger the whitescore_changed signal
+    config.blackscore = abs(black)  # This will trigger the blackscore_changed signal
+    config.whitescore = abs(white)  # This will trigger the whitescore_changed signal
 
 def set_black_won():
     """Set the black player as the winner and emit the signal."""
@@ -25,6 +25,11 @@ def set_white_won():
     """Set the white player as the winner and emit the signal."""
     config.white_won = True  # This triggers the signal for white winning
     print("White has won!")
+
+def set_turn(value):
+    """Set the turn as the turn and emit the signal."""
+    config.turn = value
+    print("turn changed")
 
 class pygame_widget(QWidget):
     def __init__(self, parent=None):
@@ -37,9 +42,9 @@ class pygame_widget(QWidget):
         self.screen = pygame.Surface((900, 800))  # Offscreen surface for rendering
         pygame.display.set_caption("Hive AI Game")
         # Game variables
-        self.hex_radius = 25* math.sqrt(3)
-        self.grid_rows = 10
-        self.grid_cols = 9
+        self.hex_radius = 20* math.sqrt(3)
+        self.grid_rows = 12
+        self.grid_cols = 13
         self.x_offset = 60  # Starting x offset for the grid
         self.y_offset = 80  # Starting y offset for the grid
         self.board = self.create_hex_grid(self.grid_rows, self.grid_cols)  # 10x10 hex grid
@@ -63,14 +68,14 @@ class pygame_widget(QWidget):
             Piece(type=-2, position=(-9, -9), insect_type="Qbee", board=self.board_logic, player=1, color=(255, 255, 0), pos_gui=(750, 200),value= 5),
             Piece(type=-1, position=(-10, -10), insect_type="Spider", board=self.board_logic, player=1, color=(255, 0, 0), pos_gui=(750, 250),value= 5),
             Piece(type=-1, position=(-11, -11), insect_type="Spider", board=self.board_logic, player=1, color=(255, 0, 0), pos_gui=(800, 250),value= 5),
-            Piece(type=1, position=(-12, -12), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(750, 450),value= 5),
-            Piece(type=1, position=(-13, -13), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(800, 450),value= 5),
-            Piece(type=1, position=(-14, -14), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(850, 450),value= 5),
-            Piece(type=1, position=(-15, -15), insect_type="Beetle", board=self.board_logic, player=2, color=(0, 0, 255), pos_gui=(750, 500),value= 5),
-            Piece(type=1, position=(-16, -16), insect_type="Beetle", board=self.board_logic, player=2, color=(0, 0, 255), pos_gui=(800, 500),value= 5),
-            Piece(type=1, position=(-17, -17), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(750, 550),value= 5),
-            Piece(type=1, position=(-18, -18), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(800, 550),value= 5),
-            Piece(type=1, position=(-19, -19), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(850, 550),value= 5),
+            Piece(type=1, position=(-12, -12), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(750, 450),value= 10),
+            Piece(type=1, position=(-13, -13), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(800, 450),value= 10),
+            Piece(type=1, position=(-14, -14), insect_type="Ant", board=self.board_logic, player=2, color=(139, 69, 19), pos_gui=(850, 450),value= 10),
+            Piece(type=1, position=(-15, -15), insect_type="Beetle", board=self.board_logic, player=2, color=(0, 0, 255), pos_gui=(750, 500),value= 15),
+            Piece(type=1, position=(-16, -16), insect_type="Beetle", board=self.board_logic, player=2, color=(0, 0, 255), pos_gui=(800, 500),value= 15),
+            Piece(type=1, position=(-17, -17), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(750, 550),value= 20),
+            Piece(type=1, position=(-18, -18), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(800, 550),value= 20),
+            Piece(type=1, position=(-19, -19), insect_type="Hopper", board=self.board_logic, player=2, color=(0, 255, 0), pos_gui=(850, 550),value= 20),
             Piece(type=2, position=(-20, -20), insect_type="Qbee", board=self.board_logic, player=2, color=(255, 255, 0), pos_gui=(750, 600),value= 5),
             Piece(type=1, position=(-21, -21), insect_type="Spider", board=self.board_logic, player=2, color=(255, 0, 0), pos_gui=(750, 650),value= 5),
             Piece(type=1, position=(-22, -22), insect_type="Spider", board=self.board_logic, player=2, color=(255, 0, 0), pos_gui=(800, 650),value= 5),
@@ -98,7 +103,12 @@ class pygame_widget(QWidget):
         self.centralize_button = QPushButton("Centralize Pieces", self)
         # self.centralize_button.clicked.connect(self.centralize_pieces)
         self.centralize_button.move(10, 10)
+
+        self.diff = 0
         self.turn = 1
+        self.ws = 0
+        self.bs = 0
+        set_turn(self.turn)
 
     def custom_copy(self):
         # Create a new instance of the class
@@ -238,26 +248,57 @@ class pygame_widget(QWidget):
     def is_odd(number):
         return number % 2 != 0
 
+    def find_piece_position(self,piece_value):
+            """Find the position of a specific piece on the board."""
+            for x in range(self.board_logic.size):
+                for y in range(self.board_logic.size):
+                    if self.board_logic.board_2d[x][y] == piece_value:
+                        return (x, y)
+            return None
+    
     def mousePressEvent(self, event):
         if (config.player1 == "Human") and (config.player2 == "Human"):
+            print("Player 1 = {config.player1}")
             if self.turn % 2 != 0:
                 if self.turn == 7:
-                    for piece in self.pieces:
+                    pos = self.find_piece_position(2)
+                    if not pos :
+                        for piece in self.pieces:
+                            pos = (event.x(), event.y())
+                            row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                            print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                            if piece.type in [ 2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    self.refresh_game_display()
+                                    return               
+                    else:
+                        """Handle mouse press events to select a piece."""
                         pos = (event.x(), event.y())
                         row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
                         print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
-                        if piece.type in [ 2]:
-                            if self.is_point_in_hex(pos, piece.pos_gui):
-                                self.selected_piece = piece
-                                self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
-                                self.start_gui_position = piece.pos_gui  # Save the starting GUI position
-                                self.start_grid_position = piece.position  # Save the starting grid position
-                                print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+                        for piece in self.pieces:
+                            if piece.type in [1 ,2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
 
-                                # Get valid moves for the selected piece
-                                self.valid_moves = self.selected_piece.valid_moves_func()
-                                print(f"Valid moves: {self.valid_moves}")
-                                return
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    self.refresh_game_display()
+                                    return      
                 else:
                     """Handle mouse press events to select a piece."""
                     pos = (event.x(), event.y())
@@ -275,26 +316,48 @@ class pygame_widget(QWidget):
                                 # Get valid moves for the selected piece
                                 self.valid_moves = self.selected_piece.valid_moves_func()
                                 print(f"Valid moves: {self.valid_moves}")
+                                self.refresh_game_display()
                                 return
             else:
                 if self.turn == 8:
-                    """Handle mouse press events to select a piece."""
-                    pos = (event.x(), event.y())
-                    row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
-                    print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
-                    for piece in self.pieces:
-                        if piece.type in [-2]:
-                            if self.is_point_in_hex(pos, piece.pos_gui):
-                                self.selected_piece = piece
-                                self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
-                                self.start_gui_position = piece.pos_gui  # Save the starting GUI position
-                                self.start_grid_position = piece.position  # Save the starting grid position
-                                print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+                    pos = self.find_piece_position(-2)
+                    if not pos :
+                        """Handle mouse press events to select a piece."""
+                        pos = (event.x(), event.y())
+                        row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                        print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                        for piece in self.pieces:
+                            if piece.type in [-2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
 
-                                # Get valid moves for the selected piece
-                                self.valid_moves = self.selected_piece.valid_moves_func()
-                                print(f"Valid moves: {self.valid_moves}")
-                                return
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    self.refresh_game_display()
+                                    return
+                    else:
+                        pos = (event.x(), event.y())
+                        row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                        print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                        for piece in self.pieces:
+                            if piece.type in [-1, -2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    self.refresh_game_display()
+                                    return
                 else:
                     """Handle mouse press events to select a piece."""
                     pos = (event.x(), event.y())
@@ -312,25 +375,73 @@ class pygame_widget(QWidget):
                                 # Get valid moves for the selected piece
                                 self.valid_moves = self.selected_piece.valid_moves_func()
                                 print(f"Valid moves: {self.valid_moves}")
+                                self.refresh_game_display()
                                 return
+        elif (config.player1 == "Human") and (config.player2 == "Computer"):
+            if self.turn % 2 != 0:
+                if self.turn == 7:
+                    pos = self.find_piece_position(2)
+                    if not pos :
+                        for piece in self.pieces:
+                            pos = (event.x(), event.y())
+                            row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                            print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                            if piece.type in [ 2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
 
-        else:
-            """Handle mouse press events to select a piece."""
-            pos = (event.x(), event.y())
-            row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
-            print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
-            for piece in self.pieces:
-                if self.is_point_in_hex(pos, piece.pos_gui):
-                    self.selected_piece = piece
-                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
-                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
-                    self.start_grid_position = piece.position  # Save the starting grid position
-                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    self.refresh_game_display()
+                                    return
+                    else:
+                        """Handle mouse press events to select a piece."""
+                        pos = (event.x(), event.y())
+                        row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                        print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                        for piece in self.pieces:
+                            if piece.type in [1 ,2]:
+                                if self.is_point_in_hex(pos, piece.pos_gui):
+                                    self.selected_piece = piece
+                                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                    self.start_grid_position = piece.position  # Save the starting grid position
+                                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
 
-                    # Get valid moves for the selected piece
-                    self.valid_moves = self.selected_piece.valid_moves_func()
-                    print(f"Valid moves: {self.valid_moves}")
-                    return
+                                    # Get valid moves for the selected piece
+                                    self.valid_moves = self.selected_piece.valid_moves_func()
+                                    print(f"Valid moves: {self.valid_moves}")
+                                    self.refresh_game_display()
+                                    return   
+                else:
+                    """Handle mouse press events to select a piece."""
+                    pos = (event.x(), event.y())
+                    row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
+                    print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
+                    for piece in self.pieces:
+                        if piece.type in [1 ,2]:
+                            if self.is_point_in_hex(pos, piece.pos_gui):
+                                self.selected_piece = piece
+                                self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
+                                self.start_gui_position = piece.pos_gui  # Save the starting GUI position
+                                self.start_grid_position = piece.position  # Save the starting grid position
+                                print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+
+                                # Get valid moves for the selected piece
+                                self.valid_moves = self.selected_piece.valid_moves_func()
+                                print(f"Valid moves: {self.valid_moves}")
+                                self.refresh_game_display()
+                                return   
+            
+        elif (config.player1 == "Computer") and (config.player2 == "Computer"): # AI-AI
+                QTimer.singleShot(30, self.execute_ai_move)
+
+            
 
 
     def mouseMoveEvent(self, event):
@@ -350,23 +461,37 @@ class pygame_widget(QWidget):
 
         # Validate if the release is within valid moves
         if (row, col) in self.valid_moves:
-            self.selected_piece.position = (row, col)  # Update grid position
-            self.selected_piece.pos_gui = self.grid_to_pixel(row, col)  # Update GUI position
-            print(f"Piece placed at grid: ({row}, {col})")
-            self.board_logic.place_piece(self.selected_piece, (row, col))  # Update board logic
+            x,y = self.selected_piece.position
+            if x<0 and y<0:
+                self.selected_piece.position = (row, col)  # Update grid position
+                self.selected_piece.pos_gui = self.grid_to_pixel(row, col)  # Update GUI position
+                print(f"Piece placed at grid: ({row}, {col})")
+                self.board_logic.place_piece(self.selected_piece, (row, col))  # Update board logic
+            else:
+                fromm = (x,y)
+                to = (row,col)
+                print(f"Piece moved from to: ({fromm}, {to})")
+                self.board_logic.make_move((fromm,to))
+                self.selected_piece.pos_gui = self.grid_to_pixel(row, col)  # Update GUI position
             self.board_logic.display()
             #print(f"This board: {self.board_logic.board_2d} ")
             for piece in self.pieces:
                 piece.board = self.board_logic
             #self.selected_piece.board = self.board_logic
             self.turn = self.turn + 1
+            set_turn(self.turn)
             if (config.player1 == "Human") and (config.player2 == "Human"):
                 a = ai.game_over(self)
                 if a == 1:
-                    self.set_white_won()
+                    set_white_won()
                 elif a == 2:
-                    self.set_black_won()
+                    set_black_won()
             elif (config.player1 == "Human") and (config.player2 == "Computer"):
+                a = ai.game_over(self)
+                if a == 1:
+                    set_white_won()
+                elif a == 2:
+                    set_black_won()
                 QTimer.singleShot(30, self.execute_ai_move)
         else:
             # Invalid move, return piece to its start position
@@ -376,48 +501,138 @@ class pygame_widget(QWidget):
 
 
         self.selected_piece = None  # Deselect the piece
-
-
-
-
-
-
-
+        wscore = ai.evaluate_board(self,1)
+        bscore = ai.evaluate_board(self,-1)
+        self.ws += wscore
+        self.bs += bscore
+        update_scores(self.bs,self.ws)
 
 
     def execute_ai_move(self):
         """Execute AI's move after player's turn."""
         if (config.player1 == "Human") and (config.player2 == "Computer"):
+            if config.diff2 == "Hard":
+                self.diff = 3
+            elif config.diff2 == "Easy":
+                self.diff = 2
             no = -1
-        elif (config.player1 == "Computer") and (config.player2 == "Human"):
-            no = 1
-        best_move = ai.find_best_move_with_iterative_deepening(self, no, 2, 100)
-        print(f"AI Move: {best_move}")
+            best_move = ai.find_best_move_with_iterative_deepening(self, no, self.diff, 100)
+            print(f"AI Move: {best_move}")
 
-        if not best_move:
-            print("No valid AI move found. Skipping AI turn.")
-            return
+            if not best_move:
+                print("No valid AI move found. Skipping AI turn.")
+                return
 
-        start_pos, end_pos = best_move
-        ai_piece = self.find_piece_by_position(self, start_pos)
+            start_pos, end_pos = best_move
+            ai_piece = self.find_piece_by_position(self, start_pos)
 
-        if ai_piece is None:
-            print(f"Error: No piece found at {start_pos}. AI move is invalid.")
-            return
+            if ai_piece is None:
+                print(f"Error: No piece found at {start_pos}. AI move is invalid.")
+                return
 
-        row1, col1 = end_pos
-        ai_piece.position = (row1, col1)  # Update grid position
-        ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
-        print(f"AI Piece placed at grid: ({row1}, {col1})")
+            row1, col1 = end_pos
+            x,y = start_pos
 
-        # Update board logic
-        self.board_logic.place_piece(ai_piece, (row1, col1))
-        self.board_logic.display()
+            if x<0 and y<0:
+                ai_piece.position = (row1, col1)  # Update grid position
+                ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
+                print(f"Piece placed at grid: ({row1}, {col1})")
+                self.board_logic.place_piece(ai_piece, (row1, col1))  # Update board logic
+            else:
+                fromm = (x,y)
+                to = (row1,col1)
+                print(f"Piece moved from to: ({fromm}, {to})")
+                self.board_logic.make_move((fromm,to))
+                ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
+                
+            self.board_logic.display()
+            # for piece in self.pieces:
+            #     piece.board = self.board_logic
+            # Debug: Ensure piece positions are consistent
+            print(f"Updated AI piece positions: {[piece.position for piece in self.pieces]}")
+            self.turn = self.turn + 1
+            set_turn(self.turn)
+            self.refresh_game_display()
 
-        # Debug: Ensure piece positions are consistent
-        print(f"Updated AI piece positions: {[piece.position for piece in self.pieces]}")
+            a = ai.game_over(self)
+            if a == 1:
+                set_white_won()
+            elif a == 2:
+                set_black_won()
 
-        self.refresh_game_display()
+        elif (config.player1 == "Computer") and (config.player2 == "Computer"):
+            
+            if self.turn % 2 != 0:
+                no = 1
+                if config.diff1 == "Hard":
+                    self.diff = 3
+                elif config.diff1 == "Easy":
+                    self.diff = 2
+            else:
+                no = -1
+                if config.diff2 == "Hard":
+                    self.diff = 3
+                elif config.diff2 == "Easy":
+                    self.diff = 2
+
+            best_move = ai.find_best_move_with_iterative_deepening(self, no, self.diff, 100)
+            print(f"AI Move: {best_move}")
+
+            if not best_move:
+                print("No valid AI move found. Skipping AI turn.")
+                return
+
+            start_pos, end_pos = best_move
+            ai_piece = self.find_piece_by_position(self, start_pos)
+
+            if ai_piece is None:
+                print(f"Error: No piece found at {start_pos}. AI move is invalid.")
+                return
+
+            row1, col1 = end_pos
+            
+            x,y = start_pos
+
+            if x<0 and y<0:
+                ai_piece.position = (row1, col1)  # Update grid position
+                ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
+                print(f"Piece placed at grid: ({row1}, {col1})")
+                self.board_logic.place_piece(ai_piece, (row1, col1))  # Update board logic
+            else:
+                fromm = (x,y)
+                to = (row1,col1)
+                print(f"Piece moved from to: ({fromm}, {to})")
+                self.board_logic.make_move((fromm,to))
+                ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
+                
+
+            self.board_logic.display()
+
+            # Debug: Ensure piece positions are consistent
+            print(f"Updated AI piece positions: {[piece.position for piece in self.pieces]}")
+            self.turn = self.turn + 1
+            set_turn(self.turn)
+
+            for piece in self.pieces:
+                piece.board = self.board_logic
+
+            self.refresh_game_display()
+
+            wscore = ai.evaluate_board(self,1)
+            bscore = ai.evaluate_board(self,-1)
+            self.ws += wscore
+            self.bs += bscore
+            update_scores(self.bs,self.ws)
+
+            if ai.game_over(self) == 0:
+                QTimer.singleShot(30, self.execute_ai_move)
+            else:
+                a = ai.game_over(self)
+                if a == 1:
+                    set_white_won()
+                elif a == 2:
+                    set_black_won()
+
 
 
         # for piece in self.pieces:

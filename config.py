@@ -1,4 +1,3 @@
-
 # config.py
 player1 = "Human"  # Default value
 player2 = "Human"
@@ -14,6 +13,7 @@ class Config(QObject):
     whitescore_changed = pyqtSignal(int)
     black_won_changed = pyqtSignal(bool)  # Signal emitted when black_won changes
     white_won_changed = pyqtSignal(bool)  # Signal emitted when white_won changes
+    turn_changed = pyqtSignal(int)  # Signal emitted when the turn changes
 
     def __init__(self):
         super().__init__()
@@ -21,6 +21,11 @@ class Config(QObject):
         self._whitescore = 0
         self._black_won = False
         self._white_won = False
+        self._turn = 0 # Default turn
+        self.player1 = "Human"  # Default value
+        self.player2 = "Human"
+        self.diff1 = "Easy"
+        self.diff2 = "Easy"
 
     # Property for blackscore
     @property
@@ -65,6 +70,18 @@ class Config(QObject):
         if self._white_won != value:
             self._white_won = value
             self.white_won_changed.emit(value)
+
+    # Property for turn
+    @property
+    def turn(self):
+        return self._turn
+
+    @turn.setter
+    def turn(self, value):
+        if self._turn != value:
+            self._turn = value
+            self.turn_changed.emit(value)
+
 
 
 # Create a global instance
