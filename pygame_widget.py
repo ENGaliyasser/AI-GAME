@@ -275,7 +275,7 @@ class pygame_widget(QWidget):
         return None
 
     def mousePressEvent(self, event):
-        if (config.player1 == "Human") and (config.player2 == "Human"):
+        if (player1 == "Human") and (player2 == "Human"):
             if self.turn % 2 != 0:
                 if self.turn == 7:
                     pos = self.find_piece_position(2)
@@ -388,7 +388,7 @@ class pygame_widget(QWidget):
                                 self.valid_moves = self.selected_piece.valid_moves_func()
                                 print(f"Valid moves: {self.valid_moves}")
                                 return
-        elif (config.player1 == "Human") and (config.player2 == "Computer"):
+        elif (player1 == "Human") and (player2 == "Computer"):
             if self.turn % 2 != 0:
                 if self.turn == 7:
                     pos = self.find_piece_position(2)
@@ -446,7 +446,7 @@ class pygame_widget(QWidget):
                                 print(f"Valid moves: {self.valid_moves}")
                                 return
 
-        elif (config.player1 == "Computer") and (config.player2 == "Computer"):  # AI-AI
+        elif (player1 == "Computer") and (player2 == "Computer"):  # AI-AI
             QTimer.singleShot(30, self.execute_ai_move)
 
     def mouseMoveEvent(self, event):
@@ -485,18 +485,18 @@ class pygame_widget(QWidget):
             #self.selected_piece.board = self.board_logic
             self.turn = self.turn + 1
             set_turn(self.turn)
-            if (config.player1 == "Human") and (config.player2 == "Human"):
+            if (player1 == "Human") and (player2 == "Human"):
                 a = ai.game_over(self)
                 if a == 1:
-                    self.set_white_won()
+                    set_white_won()
                 elif a == 2:
-                    self.set_black_won()
-            elif (config.player1 == "Human") and (config.player2 == "Computer"):
+                    set_black_won()
+            elif (player1 == "Human") and (player2 == "Computer"):
                 a = ai.game_over(self)
                 if a == 1:
-                    self.set_white_won()
+                    set_white_won()
                 elif a == 2:
-                    self.set_black_won()
+                    set_black_won()
                 QTimer.singleShot(30, self.execute_ai_move)
         else:
             # Invalid move, return piece to its start position
@@ -509,10 +509,10 @@ class pygame_widget(QWidget):
 
     def execute_ai_move(self):
         """Execute AI's move after player's turn."""
-        if (config.player1 == "Human") and (config.player2 == "Computer"):
-            if config.diff2 == "Hard":
+        if (player1 == "Human") and (player2 == "Computer"):
+            if diff2 == "Hard":
                 self.diff = 3
-            elif config.diff2 == "Easy":
+            elif diff2 == "Easy":
                 self.diff = 2
             no = -1
             best_move = ai.find_best_move_with_iterative_deepening(self, no, self.diff, 100)
@@ -554,19 +554,19 @@ class pygame_widget(QWidget):
 
             self.refresh_game_display()
 
-        elif (config.player1 == "Computer") and (config.player2 == "Computer"):
+        elif (player1 == "Computer") and (player2 == "Computer"):
 
             if self.turn % 2 != 0:
                 no = 1
-                if config.diff1 == "Hard":
+                if diff1 == "Hard":
                     self.diff = 3
-                elif config.diff1 == "Easy":
+                elif diff1 == "Easy":
                     self.diff = 2
             else:
                 no = -1
-                if config.diff2 == "Hard":
+                if diff2 == "Hard":
                     self.diff = 3
-                elif config.diff2 == "Easy":
+                elif diff2 == "Easy":
                     self.diff = 2
 
             best_move = ai.find_best_move_with_iterative_deepening(self, no, self.diff, 100)
