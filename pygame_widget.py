@@ -1,4 +1,5 @@
 import copy
+import time
 
 import pygame
 import sys
@@ -99,6 +100,7 @@ class pygame_widget(QWidget):
         # self.centralize_button.clicked.connect(self.centralize_pieces)
         self.centralize_button.move(10, 10)
         self.turn = 1
+        self.diff = 0
 
     def custom_copy(self):
         # Create a new instance of the class
@@ -418,23 +420,10 @@ class pygame_widget(QWidget):
                                 print(f"Valid moves: {self.valid_moves}")
                                 return   
             
-        else: # AI-AI
-            """Handle mouse press events to select a piece."""
-            pos = (event.x(), event.y())
-            row, col = self.pixel_to_grid(*pos)  # Unpack the tuple `pos` into x and y
-            print(f"Mouse pressed at pixel: {pos}, grid: ({row}, {col})")
-            for piece in self.pieces:
-                if self.is_point_in_hex(pos, piece.pos_gui):
-                    self.selected_piece = piece
-                    self.drag_offset = (pos[0] - piece.pos_gui[0], pos[1] - piece.pos_gui[1])
-                    self.start_gui_position = piece.pos_gui  # Save the starting GUI position
-                    self.start_grid_position = piece.position  # Save the starting grid position
-                    print(f"Selected piece: {piece.insect_type} at {piece.pos_gui}")
+        elif (config.player1 == "Computer") and (config.player2 == "Computer"): # AI-AI
+                QTimer.singleShot(30, self.execute_ai_move)
 
-                    # Get valid moves for the selected piece
-                    self.valid_moves = self.selected_piece.valid_moves_func()
-                    print(f"Valid moves: {self.valid_moves}")
-                    return
+            
 
 
     def mouseMoveEvent(self, event):
@@ -479,6 +468,11 @@ class pygame_widget(QWidget):
                 elif a == 2:
                     self.set_black_won()
             elif (config.player1 == "Human") and (config.player2 == "Computer"):
+                a = ai.game_over(self)
+                if a == 1:
+                    self.set_white_won()
+                elif a == 2:
+                    self.set_black_won()
                 QTimer.singleShot(30, self.execute_ai_move)
         else:
             # Invalid move, return piece to its start position
@@ -491,46 +485,142 @@ class pygame_widget(QWidget):
 
 
 
-
-
-
-
-
-
     def execute_ai_move(self):
         """Execute AI's move after player's turn."""
         if (config.player1 == "Human") and (config.player2 == "Computer"):
+            if config.diff2 == "Hard":
+                self.diff = 3
+            elif config.diff2 == "Easy":
+                self.diff = 2
             no = -1
-        elif (config.player1 == "Computer") and (config.player2 == "Human"):
-            no = 1
-        best_move = ai.find_best_move_with_iterative_deepening(self, no, 2, 100)
-        print(f"AI Move: {best_move}")
+            best_move = ai.find_best_move_with_iterative_deepening(self, no, self.diff, 100)
+            print(f"AI Move: {best_move}")
 
-        if not best_move:
-            print("No valid AI move found. Skipping AI turn.")
-            return
+            if not best_move:
+                print("No valid AI move found. Skipping AI turn.")
+                return
 
-        start_pos, end_pos = best_move
-        ai_piece = self.find_piece_by_position(self, start_pos)
+            start_pos, end_pos = best_move
+            ai_piece = self.find_piece_by_position(self, start_pos)
 
-        if ai_piece is None:
-            print(f"Error: No piece found at {start_pos}. AI move is invalid.")
-            return
+            if ai_piece is None:
+                print(f"Error: No piece found at {start_pos}. AI move is invalid.")
+                return
 
-        row1, col1 = end_pos
-        ai_piece.position = (row1, col1)  # Update grid position
-        ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
-        print(f"AI Piece placed at grid: ({row1}, {col1})")
+            row1, col1 = end_pos
+            x,y = start_pos
 
-        # Update board logic
-        self.board_logic.place_piece(ai_piece, (row1, col1))
-        self.board_logic.display()
+            if x<0 and y<0:
+                ai_piece.position = (row1, col1)  # Update grid position
+                ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
+                print(f"Piece placed at grid: ({row1}, {col1})")
+                self.board_logic.place_piece(ai_piece, (row1, col1))  # Update board logic
+            else:
+                fromm = (x,y)
+                to = (row1,col1)
+                print(f"Piece moved from to: ({fromm}, {to})")
+                self.board_logic.make_move((fromm,to))
+                ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
+                
+            self.board_logic.display()
+            # for piece in self.pieces:
+            #     piece.board = self.board_logic
+            # Debug: Ensure piece positions are consistent
+            print(f"Updated AI piece positions: {[piece.position for piece in self.pieces]}")
+            self.turn = self.turn + 1
 
-        # Debug: Ensure piece positions are consistent
-        print(f"Updated AI piece positions: {[piece.position for piece in self.pieces]}")
-        self.turn = self.turn + 1
+            self.refresh_game_display()
+        # elif (config.player1 == "Computer") and (config.player2 == "Human"):
+        #     no = 1
+        #     best_move = ai.find_best_move_with_iterative_deepening(self, no, 2, 100)
+        #     print(f"AI Move: {best_move}")
 
-        self.refresh_game_display()
+        #     if not best_move:
+        #         print("No valid AI move found. Skipping AI turn.")
+        #         return
+
+        #     start_pos, end_pos = best_move
+        #     ai_piece = self.find_piece_by_position(self, start_pos)
+
+        #     if ai_piece is None:
+        #         print(f"Error: No piece found at {start_pos}. AI move is invalid.")
+        #         return
+
+        #     row1, col1 = end_pos
+        #     ai_piece.position = (row1, col1)  # Update grid position
+        #     ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
+        #     print(f"AI Piece placed at grid: ({row1}, {col1})")
+
+        #     # Update board logic
+        #     self.board_logic.place_piece(ai_piece, (row1, col1))
+        #     self.board_logic.display()
+
+        #     # Debug: Ensure piece positions are consistent
+        #     print(f"Updated AI piece positions: {[piece.position for piece in self.pieces]}")
+        #     self.turn = self.turn + 1
+
+        #     self.refresh_game_display()
+
+        elif (config.player1 == "Computer") and (config.player2 == "Computer"):
+            
+            if self.turn % 2 != 0:
+                no = 1
+                if config.diff1 == "Hard":
+                    self.diff = 3
+                elif config.diff1 == "Easy":
+                    self.diff = 2
+            else:
+                no = -1
+                if config.diff2 == "Hard":
+                    self.diff = 3
+                elif config.diff2 == "Easy":
+                    self.diff = 2
+
+            best_move = ai.find_best_move_with_iterative_deepening(self, no, self.diff, 100)
+            print(f"AI Move: {best_move}")
+
+            if not best_move:
+                print("No valid AI move found. Skipping AI turn.")
+                return
+
+            start_pos, end_pos = best_move
+            ai_piece = self.find_piece_by_position(self, start_pos)
+
+            if ai_piece is None:
+                print(f"Error: No piece found at {start_pos}. AI move is invalid.")
+                return
+
+            row1, col1 = end_pos
+            
+            x,y = start_pos
+
+            if x<0 and y<0:
+                ai_piece.position = (row1, col1)  # Update grid position
+                ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
+                print(f"Piece placed at grid: ({row1}, {col1})")
+                self.board_logic.place_piece(ai_piece, (row1, col1))  # Update board logic
+            else:
+                fromm = (x,y)
+                to = (row1,col1)
+                print(f"Piece moved from to: ({fromm}, {to})")
+                self.board_logic.make_move((fromm,to))
+                ai_piece.pos_gui = self.grid_to_pixel(row1, col1)  # Update GUI position
+                
+
+            self.board_logic.display()
+
+            # Debug: Ensure piece positions are consistent
+            print(f"Updated AI piece positions: {[piece.position for piece in self.pieces]}")
+            self.turn = self.turn + 1
+
+            for piece in self.pieces:
+                piece.board = self.board_logic
+
+            self.refresh_game_display()
+
+            if ai.game_over(self) == 0:
+                QTimer.singleShot(30, self.execute_ai_move)
+
 
 
         # for piece in self.pieces:
