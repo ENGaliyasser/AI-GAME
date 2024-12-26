@@ -298,18 +298,35 @@ def find_piece_by_position(board_obj, position):
 
 
 def undo(board, flag, start, end, piece):
-    if flag == 1:
-        undoMove = (end, start)
-        board.make_move(undoMove)
-    elif flag == 0:
-        x, y = piece.position
-        board.board_2d[x][y] = 0
-        piece.position = start
-        board.pieces.pop()
-        if piece.type == -1 or piece.type == -2:
-            board.black_piece.pop()
-        elif piece.type == 1 or piece.type == 2:
-            board.white_piece.pop()
+    """
+    Undo a move on the board, either by reversing a move or removing a piece.
+
+    Args:
+    - board (Board): The game board object containing pieces and their positions.
+    - flag (int): Indicator of the type of undo operation (1 for reversing a move, 0 for removing a piece).
+    - start (tuple): The starting position of the piece before the move.
+    - end (tuple): The ending position of the piece after the move.
+    - piece (Piece): The piece involved in the move.
+
+    Returns:
+    None
+    """
+    if flag == 1:  # If the operation is to reverse a move.
+        undoMove = (end, start)  # Create a tuple representing the reversed move.
+        board.make_move(undoMove)  # Revert the move on the board.
+
+    elif flag == 0:  # If the operation is to remove a piece.
+        x, y = piece.position  # Get the current position of the piece.
+        board.board_2d[x][y] = 0  # Set the board's 2D grid at the piece's position to 0 (empty).
+        piece.position = start  # Reset the piece's position to the start.
+        board.pieces.pop()  # Remove the last piece from the board's pieces list.
+
+        # Remove the piece from the appropriate player list based on its type.
+        if piece.type == -1 or piece.type == -2:  # If the piece is a black piece.
+            board.black_piece.pop()  # Remove it from the black pieces list.
+        elif piece.type == 1 or piece.type == 2:  # If the piece is a white piece.
+            board.white_piece.pop()  # Remove it from the white pieces list.
+
 
 
 def find_best_move_with_iterative_deepening(board, player, max_depth, time_limit=5):
