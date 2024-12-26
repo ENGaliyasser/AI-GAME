@@ -92,26 +92,28 @@ def get_all_possible_moves(board, piece_type):  # T
     Returns:
     - list of tuples: Each tuple represents a move in the form of ((starting_position), (valid_move_position)).
     """
-    all_moves = []
-    for piece in board.pieces:
-        if piece_type < 0:
-            valid = piece.valid_moves_func()
-            if (valid):
-                if piece.type == -1 or piece.type == -2:
-                    for valid_move in valid:
-                        if valid_move != piece.position:
-                            all_moves.append((piece.position, valid_move))
-        else:
-            valid = piece.valid_moves_func()
-            if (valid):
-                if piece.type == 1 or piece.type == 2:
-                    for valid_move in valid:
-                        if valid_move != piece.position:
-                            all_moves.append((piece.position, valid_move))
+    all_moves = []  # Initialize a list to store all possible moves.
 
-    if not all_moves:
-        print(f"No valid moves for pieces of type {piece_type}.")
-    return all_moves
+    for piece in board.pieces:  # Iterate over all pieces on the board.
+        if piece_type < 0:  # Check if the piece type is black.
+            valid = piece.valid_moves_func()  # Get valid moves for the piece.
+            if valid:  # If there are valid moves.
+                if piece.type == -1 or piece.type == -2:  # Check if the piece is a black type (-1 or -2).
+                    for valid_move in valid:  # Iterate over the valid moves.
+                        if valid_move != piece.position:  # Ensure the move is not the current position.
+                            all_moves.append((piece.position, valid_move))  # Add the move to the list.
+        else:  # If the piece type is white.
+            valid = piece.valid_moves_func()  # Get valid moves for the piece.
+            if valid:  # If there are valid moves.
+                if piece.type == 1 or piece.type == 2:  # Check if the piece is a white type (1 or 2).
+                    for valid_move in valid:  # Iterate over the valid moves.
+                        if valid_move != piece.position:  # Ensure the move is not the current position.
+                            all_moves.append((piece.position, valid_move))  # Add the move to the list.
+
+    if not all_moves:  # If no valid moves were found.
+        print(f"No valid moves for pieces of type {piece_type}.")  # Print a message for debugging.
+
+    return all_moves  # Return the list of all possible moves.
 
 
 def game_over(board):
